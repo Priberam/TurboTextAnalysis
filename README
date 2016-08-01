@@ -1,0 +1,84 @@
+README
+
+TurboTextAnalysis project folder analysis
+  TurboTextAnalysis\Data
+    Models for TurboParser.
+      
+  TurboTextAnalysis\Deps  
+    External files/projects that are required.
+
+  TurboTextAnalysis\TurboTextAnalysis  
+    Library that exposes the complete NLP pipeline exclusively in C++ 
+    on top of TurboParser (namely, the libturboparser library)
+    (replaces python code in "python" folder of TurboParser project folder).
+    
+  TurboTextAnalysis\TurboTextAnalysisTest  
+    Example code that uses the TurboTextAnalysis library.
+
+  TurboTextAnalysis\TurboTextAnalysisPython
+    python wrapper over the TurboTextAnalysis, made with Cython.
+        
+NOTE:    
+Python 3.X is required. Cython is required.
+
+
+Build process
+
+  To Build TurboParser 
+    1. Clone or download TurboParser from master branch 
+        of https://github.com/Priberam/TurboParser
+    2. If OS is Linux - Ubuntu distro
+         2.1. you can use the install-ubuntu.sh script.
+       If OS is Linux - other distro
+         2.1. execute the following commands:
+                ./install_deps.sh 
+                automake --add-missing 
+                ./configure && make && make install
+                export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:`pwd;`/deps/local/lib:"
+       If OS is Windows
+         2.1. In vsprojects folder you will find a Microsoft Visual Studio solution. 
+         2.2. Firstly, in deps folder, you need to extract the dependency libraries 
+              and compile them (they also have Microsoft Visual Studio solutions).
+         2.3. Use the Microsoft Visual Studio solution to build all the projects.
+
+  To Build libturboparser 
+    1. Clone or download TurboParser from master branch 
+        of https://github.com/Priberam/TurboParser
+    2. If OS is Linux
+         2.1 Go to the libturboparser folder in the TurboParser project folder.
+         2.2. Then, execute make using that Makefile.
+       If OS is Windows
+         2.1 In the Microsoft Visual Studio solution, one of the projects 
+             is libturboparser. You just need to build that project 
+             (if you already built the solution (i.e., all the projects), 
+             you can ignore this step).
+          
+  To Build TurboTextAnalysis
+    1. Clone or download TurboParser from master branch 
+        of https://github.com/Priberam/TurboTextAnalysis
+    2. If OS is Linux
+         2.1. Go to the TurboTextAnalysis folder in the TurboTextAnalysis 
+              project folder, where you will find a Makefile.
+         2.2. Edit the Makefile in such a way that the paths are corrected 
+              to the path in which you have TurboParser.
+         2.3. Then, execute make using that edited Makefile.
+       If OS is Windows
+         2.1. In the root folder of TurboTextAnalysis you will find a 
+              Microsoft Visual Studio solution. 
+         2.2. Edit the project files in order for the include directories 
+              to point to the path in which you have TurboParser.
+         2.3. Build the TurboTextAnalysis project.
+  
+  To Build TurboTextAnalysisPython
+    1. Go to the TurboTextAnalysisPython folder in the TurboTextAnalysis project folder.
+    2. Edit setup.py in order to point to the paths 
+       of the necessary libraries (TurboTextAnalysis and TurboParser).
+    3. Execute 
+         python setup.py build_ext --inplace
+       Note: If the default python version is 2.X, in linux you may need to call, for example:
+         python3.4 setup.py build_ext --inplace
+       If you are in Windows with an Anaconda environment, you may need to 
+       activate a python 3 environment if you default is python 2.
+    4. Run
+         python test.py 
+       to check that everything works.    

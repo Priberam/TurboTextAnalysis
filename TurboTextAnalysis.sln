@@ -1,0 +1,96 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboTextAnalysis", "TurboTextAnalysis\TurboTextAnalysis.vcxproj", "{87662244-CA3F-4275-8C9B-BE501CE557B7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0FB6DD6-9F1D-4E8D-9891-F15D948090FF}"
+	ProjectSection(SolutionItems) = preProject
+		Dockerfile = Dockerfile
+		README = README
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7F68B0C1-9E62-4C83-9C50-553FA2632614}"
+	ProjectSection(SolutionItems) = preProject
+		Data\config.cfg = Data\config.cfg
+		Data\english_abbreviations.txt = Data\english_abbreviations.txt
+		Data\english_contraction_suffixes.txt = Data\english_contraction_suffixes.txt
+		Data\english_contractions.txt = Data\english_contractions.txt
+		Data\english_entity_recognizer.model = Data\english_entity_recognizer.model
+		Data\english_lemmas.txt = Data\english_lemmas.txt
+		Data\english_morphological_tagger.model = Data\english_morphological_tagger.model
+		Data\english_proj_tagger.model = Data\english_proj_tagger.model
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deps", "Deps", "{9395D538-66B6-4CF0-8FCF-92BEE518462E}"
+	ProjectSection(SolutionItems) = preProject
+		Deps\hashing.h = Deps\hashing.h
+	EndProjectSection
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TurboTextAnalysisPython", "TurboTextAnalysisPython\TurboTextAnalysisPython.pyproj", "{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemoTextAnalysisTest", "DemoTextAnalysisTest\DemoTextAnalysisTest.vcxproj", "{4E04B408-FFFA-46CA-938A-11AAED9954D5}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Win32 = Debug|Win32
+		Debug|x64 = Debug|x64
+		Release O0|Any CPU = Release O0|Any CPU
+		Release O0|Win32 = Release O0|Win32
+		Release O0|x64 = Release O0|x64
+		Release|Any CPU = Release|Any CPU
+		Release|Win32 = Release|Win32
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|Win32.Build.0 = Debug|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|x64.ActiveCfg = Debug|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|x64.Build.0 = Debug|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Any CPU.ActiveCfg = Release O0|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.ActiveCfg = Release O0|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.Build.0 = Release O0|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|x64.ActiveCfg = Release O0|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|x64.Build.0 = Release O0|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|Any CPU.ActiveCfg = Release|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|Win32.ActiveCfg = Release|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|Win32.Build.0 = Release|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|x64.ActiveCfg = Release|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|x64.Build.0 = Release|x64
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release O0|Any CPU.ActiveCfg = Release O0|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release O0|Win32.ActiveCfg = Release O0|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release O0|x64.ActiveCfg = Release O0|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release|Win32.ActiveCfg = Release|Any CPU
+		{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}.Release|x64.ActiveCfg = Release|Any CPU
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Debug|Win32.Build.0 = Debug|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Debug|x64.ActiveCfg = Debug|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Debug|x64.Build.0 = Debug|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|Any CPU.ActiveCfg = Release|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|Any CPU.Build.0 = Release|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|Win32.ActiveCfg = Release|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|Win32.Build.0 = Release|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|x64.ActiveCfg = Release O0|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release O0|x64.Build.0 = Release O0|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|Any CPU.ActiveCfg = Release|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|Win32.ActiveCfg = Release|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|Win32.Build.0 = Release|Win32
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|x64.ActiveCfg = Release|x64
+		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
