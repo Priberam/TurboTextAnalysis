@@ -1,17 +1,24 @@
-## Linux related
+## Linux related & misc
 *.a
 *.in
 *.la
 *.lo
 *.log
+*.lib
+*.lai
+*.slo
 *.o
 *.out
 *.trs
+*.gch
+*.pch
+*.so
+*.dylib
+*.dll
 *~
 .DS_Store
 .deps
 .libs
-Makefile
 aclocal.m4
 autom4te.cache
 compile
