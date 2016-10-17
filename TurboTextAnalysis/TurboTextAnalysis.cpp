@@ -54,6 +54,7 @@ CTurboWorkerMap _worker_map;
 TurboParserInterface::TurboParserInterface *_interface = nullptr;
 
 //Variables to select modes of execution
+static bool USE_TAGGER = true;
 static bool USE_PARSER = true;
 static bool USE_MORPHOLOGICAL_TAGGER = true;
 static bool USE_ENTITY_RECOGNIZER = true;
@@ -120,7 +121,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     workers->GetTokenizer()->TokenizeWords(sentence, &words,
                                            &start_positions, &end_positions);
 
-#if 1
+#if 0
     for (int i = 0; i < words.size(); ++i)
       std::cout << words[i] << " " << std::endl;
 #endif
@@ -214,6 +215,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
   CTurboWorkers *workers = iter->second;
 
+  TurboLemmatizer * lemmatizer;
   TurboParserInterface::TurboTaggerWorker *tagger;
   TurboParserInterface::TurboMorphologicalTaggerWorker *morphological_tagger;
   TurboParserInterface::TurboEntityRecognizerWorker *entity_recognizer;
@@ -221,8 +223,10 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
   TurboParserInterface::TurboSemanticParserWorker *semantic_parser;
   TurboParserInterface::TurboCoreferenceResolverWorker * coreference_resolver;
 
-  tagger = workers->GetTagger();
-
+  if (USE_TAGGER)
+    lemmatizer = workers->GetLemmatizer();
+  if (USE_TAGGER)
+    tagger = workers->GetTagger();
   if (USE_PARSER)
     parser = workers->GetParser();
   if (USE_MORPHOLOGICAL_TAGGER)
@@ -293,19 +297,23 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     const std::vector<std::string> & words = sentences_words[j];
 
     // Run the POS tagger.
-    SequenceInstance tagged_sentence;
     std::vector<std::string> &  tagger_tags = sentences_tagger_tags[j];
-    tagger_tags.resize(words.size(), "_");
-    tagged_sentence.Initialize(words,
-                               tagger_tags);
-    tagger->TagSentence(&tagged_sentence);
-    tagger_tags = tagged_sentence.tags();
+    if (USE_TAGGER) {
+      SequenceInstance tagged_sentence;
+      tagger_tags.resize(words.size(), "_");
+      tagged_sentence.Initialize(words,
+                                 tagger_tags);
+      tagger->TagSentence(&tagged_sentence);
+      tagger_tags = tagged_sentence.tags();
+    }
 
 
-    //Run the Lemmatizer.
     std::vector<std::string> & lemmas = sentences_lemmas[j];
-    lemmas.resize(words.size(), "_");
-    workers->GetLemmatizer()->LemmatizeSentence(words, tagger_tags, &lemmas);
+    if (USE_TAGGER) {
+      //Run the Lemmatizer.
+      lemmas.resize(words.size(), "_");
+      lemmatizer->LemmatizeSentence(words, tagger_tags, &lemmas);
+    }
 
 
     // Run the entity recognizer.
@@ -609,7 +617,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       token.set_text(words[i]);
       token.set_start_position(start_position);
       token.set_end_position(end_position);
-      token.set_tag(tagger_tags[i]);
+      if (USE_TAGGER) {
+        token.set_tag(tagger_tags[i]);
+      }
       token.set_multi_word(false);
       token.set_entity_tag("");
 
@@ -617,9 +627,14 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
                         offset_sentence + start_position,
                         m_token_analysis.GetTokenKind(&token));
 
-      pbssink->PutFeature("id", std::to_string(i + 1));
-      pbssink->PutFeature("lemma", lemmas[i]);
-      pbssink->PutFeature("pos_tag", tagger_tags[i]);
+      pbssink->PutFeature("sentence_id", std::to_string(j + 1));
+      pbssink->PutFeature("sentence_token_id", std::to_string(i + 1));
+      if (USE_TAGGER) {
+        pbssink->PutFeature("lemma", lemmas[i]);
+      }
+      if (USE_TAGGER) {
+        pbssink->PutFeature("pos_tag", tagger_tags[i]);
+      }
       if (USE_MORPHOLOGICAL_TAGGER) {
         pbssink->PutFeature("morphological_feats", morphological_tagger_tags[i]);
       }
@@ -682,12 +697,15 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
         try {
           // Read from setting
           bool read_ok = true;
+          bool use_tagger = true;
           bool use_parser = true;
           bool use_morphological_tagger = true;
           bool use_entity_recognizer = true;
           bool use_semantic_parser = true;
           bool use_coreference_resolver = true;
 
+          read_ok &= ReadSettingSafe(setting, "use_tagger",
+                                     use_tagger);
           read_ok &= ReadSettingSafe(setting, "use_parser",
                                      use_parser);
           read_ok &= ReadSettingSafe(setting, "use_morphological_tagger",
@@ -698,18 +716,50 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                                      use_semantic_parser);
           read_ok &= ReadSettingSafe(setting, "use_coreference_resolver",
                                      use_coreference_resolver);
+          USE_TAGGER = use_tagger;
           USE_PARSER = use_parser;
           USE_MORPHOLOGICAL_TAGGER = use_morphological_tagger;
           USE_ENTITY_RECOGNIZER = use_entity_recognizer;
           USE_SEMANTIC_PARSER = use_semantic_parser;
           USE_COREFERENCE_RESOLVER = use_coreference_resolver;
 
+          if (use_morphological_tagger && !use_tagger) {
+            USE_TAGGER = true;
+            LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+            LOG(WARNING) << "Requesting morphological tagger "
+              << "will activate tagger "
+              << "despite TAGGER value in config file be \'false\'." << std::endl;
+          }
+
+          if (use_entity_recognizer && !use_tagger) {
+            USE_TAGGER = true;
+            LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+            LOG(WARNING) << "Requesting entity recognizer "
+              << "will activate tagger "
+              << "despite TAGGER value in config file be \'false\'." << std::endl;
+          }
+
+          if (use_semantic_parser && !use_tagger) {
+            USE_TAGGER = true;
+            LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+            LOG(WARNING) << "Requesting semantic parser "
+              << "will activate tagger "
+              << "despite TAGGER value in config file be \'false\'." << std::endl;
+          }
           if (use_semantic_parser && !use_parser) {
             USE_PARSER = true;
             LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
             LOG(WARNING) << "Requesting semantic parser "
-              << "will activate dependency parser " 
+              << "will activate dependency parser "
               << "despite PARSER value in config file be \'false\'." << std::endl;
+          }
+
+          if (use_coreference_resolver && !use_tagger) {
+            USE_TAGGER = true;
+            LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+            LOG(WARNING) << "Requesting coreference resolver "
+              << "will activate tagger "
+              << "despite TAGGER value in config file be \'false\'." << std::endl;
           }
           if (use_coreference_resolver && !use_parser) {
             USE_PARSER = true;
@@ -797,10 +847,11 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   // tagger
   //***********************
 
-  tagger = _interface->CreateTagger();
-  tagger->
-    LoadTaggerModel(filepath_tagger_model);
-
+  if (USE_TAGGER) {
+    tagger = _interface->CreateTagger();
+    tagger->
+      LoadTaggerModel(filepath_tagger_model);
+  }
   //***********************
   // morphological_tagger
   //***********************
@@ -845,13 +896,13 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   _worker_map.
     AddLanguageWorkers(lang,
                        tokenizer,
-                       lemmatizer,
-                       tagger,
-                       (USE_MORPHOLOGICAL_TAGGER) ? morphological_tagger : NULL,
-                       (USE_ENTITY_RECOGNIZER) ? entity_recognizer : NULL,
-                       (USE_PARSER) ? parser : NULL,
-                       (USE_SEMANTIC_PARSER) ? semantic_parser : NULL,
-                       (USE_COREFERENCE_RESOLVER) ? coreference_resolver : NULL);
+                       (USE_TAGGER) ? lemmatizer : nullptr,
+                       (USE_TAGGER) ? tagger : nullptr,
+                       (USE_MORPHOLOGICAL_TAGGER) ? morphological_tagger : nullptr,
+                       (USE_ENTITY_RECOGNIZER) ? entity_recognizer : nullptr,
+                       (USE_PARSER) ? parser : nullptr,
+                       (USE_SEMANTIC_PARSER) ? semantic_parser : nullptr,
+                       (USE_COREFERENCE_RESOLVER) ? coreference_resolver : nullptr);
 
   LOG(INFO) << "Finished LoadLanguage";
 

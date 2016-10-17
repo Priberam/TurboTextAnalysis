@@ -5,14 +5,15 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>a7acadc1-d45c-4a51-baf4-b26efc114aaf</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <StartupFile>test.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>TurboTextAnalysisPython</Name>
     <RootNamespace>TurboTextAnalysisPython</RootNamespace>
+    <InterpreterId>{1e86832e-6a4b-4f45-9dbe-307728222c17}</InterpreterId>
+    <InterpreterVersion>3.5</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -32,6 +33,9 @@
     <Content Include="CppToPyTurboSink.cpp" />
     <Content Include="CppToPyTurboSink.h" />
     <Content Include="turboparser.pyx" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{1e86832e-6a4b-4f45-9dbe-307728222c17}\3.5" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
