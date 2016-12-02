@@ -100,15 +100,33 @@ int main() {
   std::string language = "en";
   std::string path = "../Data/";
   std::string text = u8"Obama visits Portugal. He is staying 3 days.";
-  int retval = text_analyser->LoadLanguage(language, path);
+  
+  LoadOptions load_options;
+  load_options.load_tagger = true;
+  load_options.load_parser = false;
+  load_options.load_morphological_tagger = true;
+  load_options.load_entity_recognizer = true;
+  load_options.load_semantic_parser = false;
+  load_options.load_coreference_resolver = false;
+  
+  int retval = text_analyser->LoadLanguage(language, path, &load_options);
   if (retval != 0)
     std::cerr << "Lexicon initialization failed, check path and language" << std::endl;
 
   DocumentSink doc_sink; // the output of the Anlyse process will be fed to this
 
+  AnalyseOptions options;
+  options.use_tagger = true;
+  options.use_parser = false;
+  options.use_morphological_tagger = true;
+  options.use_entity_recognizer = true;
+  options.use_semantic_parser = false;
+  options.use_coreference_resolver = false;
+
   retval = text_analyser->Analyse(language, 
                                   text, 
-                                  &doc_sink);
+                                  &doc_sink,
+                                  &options);
   if (retval != 0)
     std::cerr << "Error in CTurboTextAnalysis Analyse" << std::endl;
 
@@ -129,7 +147,8 @@ int main() {
                                   sentence_start_positions,
                                   sentences_start_positions,
                                   sentences_end_position,
-                                  &doc_sink);
+                                  &doc_sink,
+                                  &options);
   if (retval != 0)
     std::cerr << "Error in CTurboTextAnalysis Analyse" << std::endl;
 
