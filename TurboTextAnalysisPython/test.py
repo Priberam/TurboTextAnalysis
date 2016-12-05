@@ -1,4 +1,4 @@
-from turboparser import Pyinternal_TokenKind, PyCPBSSink, PyCppToPyTurboSink, PyCTurboTextAnalysis
+from turboparser import Pyinternal_TokenKind, PyCPBSSink, PyCppToPyTurboSink, PyCTurboTextAnalysis, PyLoadOptions, PyAnalyseOptions
 import sys
 import os 
 
@@ -19,7 +19,14 @@ if len(sys.argv) > 1:
         if line.startswith("Language="):
            language = line[9:]
 
-retval = turbotextanalysis.load_language(language, path)
+load_options = PyLoadOptions()
+load_options.load_tagger = True;
+load_options.load_parser = False;
+load_options.load_morphological_tagger = True;
+load_options.load_entity_recognizer = True;
+load_options.load_semantic_parser = False;
+load_options.load_coreference_resolver = False;
+retval = turbotextanalysis.load_language(language, path, load_options)
 if retval != 0:
     print("ERROR in PyCTurboTextAnalysis load_language")
     print("Return value: ", retval)
@@ -30,7 +37,14 @@ sink = PyCppToPyTurboSink(True)
 
 text = "Obama visits Portugal."
 
-retval = turbotextanalysis.analyse(language, text, sink)
+options = PyAnalyseOptions()
+options.use_tagger = True;
+options.use_parser = False;
+options.use_morphological_tagger = True;
+options.use_entity_recognizer = True;
+options.use_semantic_parser = False;
+options.use_coreference_resolver = False;
+retval = turbotextanalysis.analyse(language, text, sink, options)
 if retval != 0:
     print("ERROR in PyCTurboTextAnalysis analyse")
     print("Return value: ", retval)
@@ -87,7 +101,7 @@ class ClientSideSinkRedefined(PyCppToPyTurboSink):
 sink = ClientSideSinkRedefined(True)
 
 text = "Obama visits Portugal."
-turbotextanalysis.analyse(language, text, sink)
+turbotextanalysis.analyse(language, text, sink, options)
 if retval != 0:
     print("ERROR in PyCTurboTextAnalysis analyse")
     print("Return value: ", retval)
@@ -125,7 +139,7 @@ turbotextanalysis.analyse_with_tokens(language,
                                         sentences_words,
                                         sentence_start_positions,
                                         sentences_start_positions,
-                                        sentences_end_position, sink)
+                                        sentences_end_position, sink, options)
 if retval != 0:
     print("ERROR in PyCTurboTextAnalysis analyse")
     print("Return value: ", retval)

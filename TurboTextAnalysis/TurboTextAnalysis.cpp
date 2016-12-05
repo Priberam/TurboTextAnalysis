@@ -171,8 +171,14 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     const std::vector<std::string> & sentence_words = sentences_words[i];
 
     glyphaware_sentence_curr_pos +=
-      (i == 0 ? 0 : (sentence_start_positions[i] + sentences_start_positions[i][0] -
-                     sentences_end_positions[i - 1][sentences_words[i - 1].size() - 1]));
+      (i == 0 ? 0 :
+      (
+       (sentence_start_positions[i] +
+        sentences_start_positions[i][0]) -
+        (sentence_start_positions[i - 1] +
+         sentences_end_positions[i - 1][sentences_end_positions[i - 1].size() - 1])
+        )
+       );
 
     glyphaware_sentence_start_positions.push_back(glyphaware_sentence_curr_pos);
 
@@ -913,7 +919,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                   << "despite PARSER value in options be \'false\'." << std::endl;
               }
             }
-            
+
           }
 
           {

@@ -134,13 +134,13 @@ int main() {
 
   std::vector<std::vector<std::string>> sentences_words = { { "Obama", "visits", "Portugal", "." },
   { "He", "is", "staying", "3", "days","." } };
-    std::vector<int> sentence_start_positions = { 0, 23 };
-    std::vector<std::vector<int> > sentences_start_positions
-      = { { 0, 6, 13, 21 },
-      { 0, 3, 6, 14, 16, 20 } };
-    std::vector<std::vector<int> > sentences_end_position
-      = { { 5, 12, 21, 22 },
-      { 2, 5, 13, 15, 20, 21 } };
+  std::vector<int> sentence_start_positions = { 0, 23 };
+  std::vector<std::vector<int> > sentences_start_positions
+    = { { 0, 6, 13, 21 },
+    { 0, 3, 6, 14, 16, 20 } };
+  std::vector<std::vector<int> > sentences_end_position
+    = { { 5, 12, 21, 22 },
+    { 2, 5, 13, 15, 20, 21 } };
 
   retval = text_analyser->Analyse(language,
                                   sentences_words,
