@@ -60,6 +60,7 @@ public:
               AnalyseOptions * options = nullptr);
   int Analyse(const std::string &language,
               const std::vector<std::vector<std::string>> &words,
+              const std::vector<std::vector<std::string>> &original_sentences_words,
               const std::vector<int> &sentence_start_positions,
               const std::vector<std::vector<int> > &sentences_start_positions,
               const std::vector<std::vector<int> > &sentences_end_positions,

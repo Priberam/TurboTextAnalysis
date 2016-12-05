@@ -144,6 +144,7 @@ int main() {
 
   retval = text_analyser->Analyse(language,
                                   sentences_words,
+                                  {},
                                   sentence_start_positions,
                                   sentences_start_positions,
                                   sentences_end_position,

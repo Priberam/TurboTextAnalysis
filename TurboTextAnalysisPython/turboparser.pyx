@@ -68,12 +68,14 @@ cdef extern from "../TurboTextAnalysis/TurboTextAnalysis.h":
                     AnalyseOptions*options)
         int Analyse(string language,
                     vector[vector[string]] sentences_words,
+                    vector[vector[string]] original_sentences_words,
                     vector[int] sentence_start_positions,
                     vector[vector[int]] sentences_start_positions,
                     vector[vector[int]] sentences_end_positions,
                     CPBSSink* pbssink)
         int Analyse(string language,
                     vector[vector[string]] sentences_words,
+                    vector[vector[string]] original_sentences_words,
                     vector[int] sentence_start_positions,
                     vector[vector[int]] sentences_start_positions,
                     vector[vector[int]] sentences_end_positions,
@@ -264,6 +266,7 @@ cdef class PyCTurboTextAnalysis:
     def analyse_with_tokens(self, 
                             str language, 
                             sentences_words,
+                            original_sentences_words,
                             vector[int] sentence_start_positions,
                             vector[vector[int]] sentences_start_positions,
                             vector[vector[int]] sentences_end_positions, 
@@ -273,6 +276,7 @@ cdef class PyCTurboTextAnalysis:
         if pyanalyseoptions is None:	
             retval = self.c_turbotextanalysis.Analyse(language.encode(encoding='UTF-8'), 
                                                       [[sentence_word.encode(encoding='UTF-8') for sentence_word in sentence_words] for sentence_words in sentences_words],
+                                                      [[original_sentence_word.encode(encoding='UTF-8') for original_sentence_word in original_sentence_words] for original_sentence_words in original_sentences_words],
                                                       sentence_start_positions,
                                                       sentences_start_positions,
                                                       sentences_end_positions,
@@ -286,6 +290,7 @@ cdef class PyCTurboTextAnalysis:
             c_options.use_coreference_resolver = pyanalyseoptions.use_coreference_resolver
             retval = self.c_turbotextanalysis.Analyse(language.encode(encoding='UTF-8'),
                                                       [[sentence_word.encode(encoding='UTF-8') for sentence_word in sentence_words] for sentence_words in sentences_words],
+                                                      [[original_sentence_word.encode(encoding='UTF-8') for original_sentence_word in original_sentence_words] for original_sentence_words in original_sentences_words],
                                                       sentence_start_positions,
                                                       sentences_start_positions,
                                                       sentences_end_positions,

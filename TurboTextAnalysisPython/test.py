@@ -134,9 +134,11 @@ sentences_start_positions = [[ 0, 6, 13, 21 ],
       [ 0, 3, 6, 14, 16, 20 ]];
 sentences_end_position = [[ 5, 12, 21, 22 ],
       [ 2, 5, 13, 15, 20, 21 ]];
+original_sentences_words = sentences_words;
 
 turbotextanalysis.analyse_with_tokens(language, 
                                         sentences_words,
+                                        original_sentences_words,
                                         sentence_start_positions,
                                         sentences_start_positions,
                                         sentences_end_position, sink, options)

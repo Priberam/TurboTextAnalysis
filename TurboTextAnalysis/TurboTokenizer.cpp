@@ -500,13 +500,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
           IsWhitespace(sentence, current_position - 1,
                        &previous_match_length) ||
           IsLeftBracket(sentence[current_position - 1])) {
-        AddWordToken("``", current_position, current_position + match_length,
-                     words, word_start_positions, word_end_positions);
+        AddWordToken("``", 
+                     current_position, 
+                     current_position + match_length,
+                     words, 
+                     word_start_positions, 
+                     word_end_positions);
         position += match_length;
 
         // Now take care of the reminiscent part of the word.
-        LookForSubwords(sentence, start_position + position, end_position,
-                        words, word_start_positions, word_end_positions);
+        LookForSubwords(sentence, 
+                        start_position + position, 
+                        end_position,
+                        words, 
+                        word_start_positions, 
+                        word_end_positions);
 
         end_position = current_position;
         word = sentence.substr(start_position, end_position - start_position);
@@ -528,14 +536,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
         !IsDigit(sentence[current_position+1])) {
       match_length = 1;
       std::string token_word = word.substr(position, match_length);
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word, 
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words,
+                   word_start_positions, 
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence,
+                      start_position + position,
+                      end_position,
+                      words, 
+                      word_start_positions,
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -551,13 +566,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     // Ellipsis ("...") become a single token.
     // TODO: Handle the special ellipsis character.
     if (IsEllipsis(word, position, &match_length)) {
-      AddWordToken("...", current_position, current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+      AddWordToken("...", 
+                   current_position, 
+                   current_position + match_length,
+                   words,
+                   word_start_positions,
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence, 
+                      start_position + position,
+                      end_position,
+                      words, 
+                      word_start_positions, 
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -576,14 +599,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
          word[position] == '%' || word[position] == '&')) {
       match_length = 1;
       std::string token_word = word.substr(position, match_length);
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word, 
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words, 
+                   word_start_positions,
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence,
+                      start_position + position,
+                      end_position,
+                      words,
+                      word_start_positions,
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -612,14 +642,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
       if (next_word_position >= sentence.length()) {
         // End of sentence.
         match_length = 1;
-        AddWordToken(".", current_position,
+        AddWordToken(".", 
+                     current_position,
                      current_position + match_length,
-                     words, word_start_positions, word_end_positions);
+                     words,
+                     word_start_positions,
+                     word_end_positions);
         position += match_length;
 
         // Now take care of the reminiscent part of the word.
-        LookForSubwords(sentence, start_position + position, end_position,
-                        words, word_start_positions, word_end_positions);
+        LookForSubwords(sentence, 
+                        start_position + position,
+                        end_position,
+                        words, 
+                        word_start_positions, 
+                        word_end_positions);
 
         end_position = current_position;
         word = sentence.substr(start_position, end_position - start_position);
@@ -637,14 +674,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     if (IsExclamationMark(word[position]) || IsQuestionMark(word[position])) {
       match_length = 1;
       std::string token_word = word.substr(position, match_length);
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word, 
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words,
+                   word_start_positions,
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence,
+                      start_position + position, 
+                      end_position,
+                      words, 
+                      word_start_positions, 
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -670,14 +714,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
       std::string token_word = "'"; //word.substr(position, match_length);
       //std::cerr << "AddWordToken " << token_word << " " << current_position
       //          << " " << current_position + match_length << std::endl;
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word,
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words,
+                   word_start_positions, 
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence, 
+                      start_position + position, 
+                      end_position,
+                      words, 
+                      word_start_positions,
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -694,14 +745,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     if (IsLeftBracket(word[position]) || IsRightBracket(word[position])) {
       match_length = 1;
       std::string token_word = word.substr(position, match_length);
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word,
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words,
+                   word_start_positions,
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence,
+                      start_position + position,
+                      end_position,
+                      words,
+                      word_start_positions,
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -717,13 +775,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     // Each dash "--" becomes a single token. TODO: also em dashes "---".
     if (IsDash(word, position, &match_length)) {
       //std::cerr << "match_length: " << match_length << std::endl;
-      AddWordToken("--", current_position, current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+      AddWordToken("--", 
+                   current_position, 
+                   current_position + match_length,
+                   words,
+                   word_start_positions, 
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence, 
+                      start_position + position,
+                      end_position,
+                      words, 
+                      word_start_positions,
+                      word_end_positions);
       for (int k = 0; k < words->size(); ++k) {
         //std::cerr << "subword found: " << (*words)[k] << std::endl;
       }
@@ -750,14 +816,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
       std::string token_word = "''";
       //std::cerr << "AddWordToken " << token_word << " " << current_position
       //          << " " << current_position + match_length << std::endl;
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word, 
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words, 
+                   word_start_positions, 
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence, 
+                      start_position + position, 
+                      end_position,
+                      words, 
+                      word_start_positions, 
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -785,14 +858,21 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
 
       match_length = (int)contraction_word.length();
       std::string token_word = canonical_suffix; //word.substr(position, match_length);
-      AddWordToken(token_word, current_position,
+      AddWordToken(token_word,
+                   current_position,
                    current_position + match_length,
-                   words, word_start_positions, word_end_positions);
+                   words,
+                   word_start_positions, 
+                   word_end_positions);
       position += match_length;
 
       // Now take care of the reminiscent part of the word.
-      LookForSubwords(sentence, start_position + position, end_position,
-                      words, word_start_positions, word_end_positions);
+      LookForSubwords(sentence, 
+                      start_position + position, 
+                      end_position,
+                      words, 
+                      word_start_positions, 
+                      word_end_positions);
 
       end_position = current_position;
       word = sentence.substr(start_position, end_position - start_position);
@@ -830,14 +910,20 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
       AddWordToken(token_word,
                    current_position + contraction->start_positions()[i],
                    current_position + contraction->end_positions()[i],
-                   words, word_start_positions, word_end_positions);
+                   words, 
+                   word_start_positions,
+                   word_end_positions);
     }
   } else {
     // Regular word.
     //std::cerr << "Regular word: [" << current_word << "]" << std::endl;
     std::string token_word = current_word;
-    AddWordToken(token_word, current_position, end_position,
-                 words, word_start_positions, word_end_positions);
+    AddWordToken(token_word, 
+                 current_position,
+                 end_position,
+                 words,
+                 word_start_positions,
+                 word_end_positions);
   }
 }
 

@@ -105,6 +105,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<std::string>
   > sentences_words(sentences.size());
   std::vector<
+    std::vector<std::string>
+  > original_sentences_words(sentences.size());
+  std::vector<
     std::vector<int>
   > sentences_start_positions(sentences.size());
   std::vector<
@@ -119,8 +122,10 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<int> & start_positions = sentences_start_positions[j];
     std::vector<int> & end_positions = sentences_end_positions[j];
 
-    workers->GetTokenizer()->TokenizeWords(sentence, &words,
-                                           &start_positions, &end_positions);
+    workers->GetTokenizer()->TokenizeWords(sentence, 
+                                           &words,
+                                           &start_positions, 
+                                           &end_positions);
 
 #if 0
     for (int i = 0; i < words.size(); ++i)
@@ -153,7 +158,10 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
   }
 
-
+  if (sentences_words.size() != sentences.size()) {
+    LOG(ERROR) << "Mismatch in size of vectors";
+    return -1;
+  }
 
   //Change start and end positions from byte-wise to glyph-wise values
   //The white spaces between tokens (in case of existence), are assumed 
@@ -167,8 +175,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<int> > glyphaware_sentences_end_positions(sentences.size());
 
   int glyphaware_sentence_curr_pos = 0;
-  for (int i = 0; i < sentences_words.size(); ++i) {
+  for (int i = 0; i < sentences.size(); ++i) {
     const std::vector<std::string> & sentence_words = sentences_words[i];
+    std::vector<std::string> & original_sentence_words = original_sentences_words[i];
 
     glyphaware_sentence_curr_pos +=
       (i == 0 ? 0 :
@@ -185,12 +194,16 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     int glyphaware_word_curr_pos = 0;
     for (int j = 0; j < sentence_words.size(); ++j) {
       const std::string & word = sentence_words[j];
+      std::string original_word =
+        sentences[i].substr(sentences_start_positions[i][j],
+                            sentences_end_positions[i][j] - sentences_start_positions[i][j]);
+      original_sentence_words.push_back(original_word);
 
       glyphaware_word_curr_pos +=
         (j == 0 ? 0 : (sentences_start_positions[i][j] -
                        sentences_end_positions[i][j - 1]));
 
-      int glyph_len = (int)CountUtf8Glyphs(word);
+      int glyph_len = (int)CountUtf8Glyphs(original_word);
 
       glyphaware_sentences_start_positions[i].push_back(glyphaware_word_curr_pos);
       glyphaware_sentences_end_positions[i].push_back(glyphaware_word_curr_pos + glyph_len);
@@ -204,6 +217,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
   return Analyse(language,
                  sentences_words,
+                 original_sentences_words,
                  glyphaware_sentence_start_positions,
                  glyphaware_sentences_start_positions,
                  glyphaware_sentences_end_positions,
@@ -213,6 +227,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
 int CTurboTextAnalysis::Analyse(const std::string &language,
                                 const std::vector<std::vector<std::string>> &sentences_words,
+                                const std::vector<std::vector<std::string>> &original_sentences_words,
                                 const std::vector<int> &sentence_start_positions,
                                 const std::vector<std::vector<int> > &sentences_start_positions,
                                 const std::vector<std::vector<int> > &sentences_end_positions,
@@ -710,6 +725,8 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
       pbssink->PutFeature("sentence_id", std::to_string(j + 1));
       pbssink->PutFeature("sentence_token_id", std::to_string(i + 1));
+      if (original_sentences_words.size() > j && original_sentences_words[j].size() > i)
+        pbssink->PutFeature("original_token", original_sentences_words[j][i]);
       if (tagger != nullptr &&
         ((options == nullptr && default_use_tagger) ||
           (options != nullptr && options->use_tagger))) {
