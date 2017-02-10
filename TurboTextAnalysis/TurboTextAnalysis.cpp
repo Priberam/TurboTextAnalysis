@@ -1,6 +1,5 @@
 // TurboTextAnalysis.cpp : Implementation of DLL Exports.
 
-
 #include "TurboTextAnalysis.h"
 #include "TurboParserInterface.h"
 #include "TurboWorkers.h"
@@ -45,11 +44,9 @@ size_t CountUtf8Glyphs(const std::string &str) {
     if ((c & 0xc0) != 0x80) j++;
   return j;
 }
-
 }
 
 // Map of workers per language.
-//TODO (dan) Access and modifications to these objects must be protected with mutex
 CTurboWorkerMap _worker_map;
 TurboParserInterface::TurboParserInterface *_interface = nullptr;
 
@@ -61,7 +58,6 @@ static bool default_use_entity_recognizer = true;
 static bool default_use_semantic_parser = true;
 static bool default_use_coreference_resolver = true;
 
-
 int CTurboTextAnalysis::Analyse(const std::string &language,
                                 const std::string &text,
                                 CPBSSink* pbssink,
@@ -71,7 +67,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     return -1;
 
   CTurboWorkers *workers = iter->second;
-
 
   // For now, assume one sentence per line, words separated by whitespaces.
 
@@ -100,7 +95,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
   --num_processed_characters; // Remove the extra sentence separator.
 #endif
 
-
   std::vector<
     std::vector<std::string>
   > sentences_words(sentences.size());
@@ -122,9 +116,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<int> & start_positions = sentences_start_positions[j];
     std::vector<int> & end_positions = sentences_end_positions[j];
 
-    workers->GetTokenizer()->TokenizeWords(sentence, 
+    workers->GetTokenizer()->TokenizeWords(sentence,
                                            &words,
-                                           &start_positions, 
+                                           &start_positions,
                                            &end_positions);
 
 #if 0
@@ -155,7 +149,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     }
     --offset; //Remove the extra word separator.
 #endif
-
   }
 
   if (sentences_words.size() != sentences.size()) {
@@ -164,9 +157,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
   }
 
   //Change start and end positions from byte-wise to glyph-wise values
-  //The white spaces between tokens (in case of existence), are assumed 
+  //The white spaces between tokens (in case of existence), are assumed
   //to be 1 byte each (same size either byte-wise to glyph-wise).
-  //Current white spaces are " " "\t" "\r" "\n" "\f" "\v", as described in 
+  //Current white spaces are " " "\t" "\r" "\n" "\f" "\v", as described in
   //variable kTurboWhitespaces in TurboTokenizer.cpp
   std::vector<int> glyphaware_sentence_start_positions;
   std::vector<
@@ -209,11 +202,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       glyphaware_sentences_end_positions[i].push_back(glyphaware_word_curr_pos + glyph_len);
 
       glyphaware_word_curr_pos += glyph_len;
-
     }
     glyphaware_sentence_curr_pos += glyphaware_word_curr_pos;
   }
-
 
   return Analyse(language,
                  sentences_words,
@@ -318,7 +309,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     (options != nullptr && options->use_coreference_resolver))
     coreference_resolver = workers->GetCoreferenceResolver();
 
-
   std::vector<
     std::vector<std::string>
   > sentences_tagger_tags(sentences_words.size());;
@@ -340,7 +330,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
   std::vector<
     std::vector<std::vector<std::string>>
   > sentences_morphological_tagger_tags_splitted(sentences_words.size());;
-
 
   std::vector<
     std::vector<std::string>
@@ -372,12 +361,11 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<std::string>
   > sentences_coref_info(sentences_words.size());;
 
-
   for (int j = 0; j < sentences_words.size(); ++j) {
     const std::vector<std::string> & words = sentences_words[j];
 
     // Run the POS tagger.
-    std::vector<std::string> &  tagger_tags = sentences_tagger_tags[j];
+    std::vector<std::string> & tagger_tags = sentences_tagger_tags[j];
     if (tagger != nullptr &&
       ((options == nullptr && default_use_tagger) ||
         (options != nullptr && options->use_tagger))) {
@@ -389,7 +377,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       tagger_tags = tagged_sentence.tags();
     }
 
-
     std::vector<std::string> & lemmas = sentences_lemmas[j];
     if (tagger != nullptr &&
       ((options == nullptr && default_use_tagger) ||
@@ -398,7 +385,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       lemmas.resize(words.size(), "_");
       lemmatizer->LemmatizeSentence(words, tagger_tags, &lemmas);
     }
-
 
     // Run the entity recognizer.
     if (entity_recognizer != nullptr &&
@@ -418,7 +404,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       entity_tagged_sentence.CreateSpansFromTags(entity_tags,
                                                  &entity_spans);
     }
-
 
     //Run the Morphological tagger.
     if (morphological_tagger != nullptr &&
@@ -447,8 +432,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
                       &morphological_tagger_tags_splitted[i]);
       }
     }
-
-
 
     {
       //Run the Dependency parser.
@@ -533,7 +516,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
                                             argument_indices);
         semantic_parser->ParseSemanticDependenciesFromSentence(&semantic_parsed_sentence);
 
-
         auto num_predicates = semantic_parsed_sentence.GetNumPredicates();
         predicate_names.resize(num_predicates);
         predicate_indices.resize(num_predicates);
@@ -602,10 +584,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       deprels_with_root.insert(deprels_with_root.begin(), "_root_");
       heads_shifted_with_root.insert(heads_shifted_with_root.begin(), -1);
       speakers_with_root.insert(speakers_with_root.begin(), "__");
-
-
-
-
 
       coref_sentences[j].Initialize("",
                                     words_with_root,
@@ -719,44 +697,45 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       token.set_multi_word(false);
       token.set_entity_tag("");
 
-      pbssink->PutToken(token_text, end_position - start_position,
+      pbssink->PutToken(token_text.c_str(),
+                        end_position - start_position,
                         offset_sentence + start_position,
                         m_token_analysis.GetTokenKind(&token));
 
-      pbssink->PutFeature("sentence_id", std::to_string(j + 1));
-      pbssink->PutFeature("sentence_token_id", std::to_string(i + 1));
+      pbssink->PutFeature("sentence_id", std::to_string(j + 1).c_str());
+      pbssink->PutFeature("sentence_token_id", std::to_string(i + 1).c_str());
       if (original_sentences_words.size() > j && original_sentences_words[j].size() > i)
-        pbssink->PutFeature("original_token", original_sentences_words[j][i]);
+        pbssink->PutFeature("original_token", (original_sentences_words[j][i]).c_str());
       if (tagger != nullptr &&
         ((options == nullptr && default_use_tagger) ||
           (options != nullptr && options->use_tagger))) {
-        pbssink->PutFeature("lemma", lemmas[i]);
+        pbssink->PutFeature("lemma", (lemmas[i]).c_str());
       }
       if (tagger != nullptr &&
         ((options == nullptr && default_use_tagger) ||
           (options != nullptr && options->use_tagger))) {
-        pbssink->PutFeature("pos_tag", tagger_tags[i]);
+        pbssink->PutFeature("pos_tag", (tagger_tags[i]).c_str());
       }
       if (morphological_tagger != nullptr &&
         ((options == nullptr && default_use_morphological_tagger) ||
           (options != nullptr && options->use_morphological_tagger))) {
-        pbssink->PutFeature("morphological_feats", morphological_tagger_tags[i]);
+        pbssink->PutFeature("morphological_feats", (morphological_tagger_tags[i]).c_str());
       }
       if (parser != nullptr &&
         ((options == nullptr && default_use_parser) ||
           (options != nullptr && options->use_parser))) {
-        pbssink->PutFeature("dependency_head", std::to_string(heads[i] + 1));
-        pbssink->PutFeature("dependency_relation", deprels[i]);
+        pbssink->PutFeature("dependency_head", std::to_string(heads[i] + 1).c_str());
+        pbssink->PutFeature("dependency_relation", (deprels[i]).c_str());
       }
       if (entity_recognizer != nullptr &&
         ((options == nullptr && default_use_entity_recognizer) ||
           (options != nullptr && options->use_entity_recognizer))) {
-        pbssink->PutFeature("entity_tag", entity_tags[i]);
+        pbssink->PutFeature("entity_tag", (entity_tags[i]).c_str());
       }
       if (semantic_parser != nullptr &&
         ((options == nullptr && default_use_semantic_parser) ||
           (options != nullptr && options->use_semantic_parser))) {
-        pbssink->PutFeature("semantic_predicate", predicates[i]);
+        pbssink->PutFeature("semantic_predicate", (predicates[i]).c_str());
         std::string semantic_args;
         int k = 0;
         for (const auto & elem : argument_lists[i]) {
@@ -765,12 +744,12 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
           semantic_args += elem;
           k++;
         }
-        pbssink->PutFeature("semantic_arguments_list", semantic_args);
+        pbssink->PutFeature("semantic_arguments_list", semantic_args.c_str());
       }
       if (coreference_resolver != nullptr &&
         ((options == nullptr && default_use_coreference_resolver) ||
           (options != nullptr && options->use_coreference_resolver))) {
-        pbssink->PutFeature("coref_info", coref_info[i]);
+        pbssink->PutFeature("coref_info", (coref_info[i]).c_str());
       }
     }
     pbssink->EndSentence();
@@ -781,319 +760,378 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                                      const std::string &path,
                                      LoadOptions * options) {
+  // using a local lock_guard to lock m_lock guarantees unlocking on destruction / exception:
+  std::lock_guard<std::mutex> lock(_worker_map.m_lock);
+
   CTurboWorkers*turbo_workers = nullptr;
   if (_worker_map.FindLanguageWorkers(lang, turbo_workers))
     return 0;
 
-  bool load_tagger = true;
-  bool load_parser = true;
-  bool load_morphological_tagger = true;
-  bool load_entity_recognizer = true;
-  bool load_semantic_parser = true;
-  bool load_coreference_resolver = true;
+  LoadOptions local_options;
+  if (options != nullptr)local_options = *options;
 
-  std::string filepath_abbreviations = path;
-  std::string filepath_contractions = path;
-  std::string filepath_contraction_suffixes = path;
+  std::string filepath_abbreviations = "";
+  std::string filepath_contractions = "";
+  std::string filepath_contraction_suffixes = "";
 
-  std::string filepath_lemmas = path;
+  std::string filepath_lemmas = "";
 
-  std::string filepath_tagger_model = path;
-  std::string filepath_morphological_tagger_model = path;
-  std::string filepath_entity_recognizer_model = path;
-  std::string filepath_parser_model = path;
-  std::string filepath_semantic_parser_model = path;
-  std::string filepath_coreference_resolver_model = path;
+  std::string filepath_tagger_model = "";
+  std::string filepath_morphological_tagger_model = "";
+  std::string filepath_entity_recognizer_model = "";
+  std::string filepath_parser_model = "";
+  std::string filepath_semantic_parser_model = "";
+  std::string filepath_coreference_resolver_model = "";
 
   std::string filepath_config = path;
   filepath_config += "config.cfg";
-  if (_interface == nullptr) {
-    try {
-      libconfig::Config config;
-      config.readFile(filepath_config.c_str());
 
+  try {
+    libconfig::Config config;
+    config.readFile(filepath_config.c_str());
+
+    if (_interface == nullptr) {
       {
-        libconfig::Setting &setting = config.lookup("turbotextanalysis");
-        try {
-          // Read from setting
-          bool read_ok = true;
-          {
-            if (options == nullptr) {
-              read_ok &= ReadSettingSafe(setting, "load_tagger",
-                                         load_tagger);
-              read_ok &= ReadSettingSafe(setting, "load_parser",
-                                         load_parser);
-              read_ok &= ReadSettingSafe(setting, "load_morphological_tagger",
-                                         load_morphological_tagger);
-              read_ok &= ReadSettingSafe(setting, "load_entity_recognizer",
-                                         load_entity_recognizer);
-              read_ok &= ReadSettingSafe(setting, "load_semantic_parser",
-                                         load_semantic_parser);
-              read_ok &= ReadSettingSafe(setting, "load_coreference_resolver",
-                                         load_coreference_resolver);
-              if (!read_ok) {
-                std::cerr << "Missing configuration properties" << std::endl;
-                return false;
-              }
-
-              if (load_morphological_tagger && !load_tagger) {
-                load_tagger = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting morphological tagger "
-                  << "will activate tagger "
-                  << "despite TAGGER value in config file be \'false\'." << std::endl;
-              }
-
-              if (load_entity_recognizer && !load_tagger) {
-                load_tagger = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting entity recognizer "
-                  << "will activate tagger "
-                  << "despite TAGGER value in config file be \'false\'." << std::endl;
-              }
-
-              if (load_semantic_parser && !load_tagger) {
-                load_tagger = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting semantic parser "
-                  << "will activate tagger "
-                  << "despite TAGGER value in config file be \'false\'." << std::endl;
-              }
-              if (load_semantic_parser && !load_parser) {
-                load_parser = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting semantic parser "
-                  << "will activate dependency parser "
-                  << "despite PARSER value in config file be \'false\'." << std::endl;
-              }
-
-              if (load_coreference_resolver && !load_tagger) {
-                load_tagger = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting coreference resolver "
-                  << "will activate tagger "
-                  << "despite TAGGER value in config file be \'false\'." << std::endl;
-              }
-              if (load_coreference_resolver && !load_parser) {
-                load_parser = true;
-                LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting coreference resolver "
-                  << "will activate dependency parser "
-                  << "despite PARSER value in config file be \'false\'." << std::endl;
-              }
-
-            } else {
-              load_tagger = options->load_tagger;
-              load_parser = options->load_parser;
-              load_morphological_tagger = options->load_morphological_tagger;
-              load_entity_recognizer = options->load_entity_recognizer;
-              load_semantic_parser = options->load_semantic_parser;
-              load_coreference_resolver = options->load_coreference_resolver;
-
-              if (options->load_morphological_tagger && !options->load_tagger) {
-                options->load_tagger = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting morphological tagger "
-                  << "will activate tagger "
-                  << "despite TAGGER value in options be \'false\'." << std::endl;
-              }
-
-              if (options->load_entity_recognizer && !options->load_tagger) {
-                options->load_tagger = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting entity recognizer "
-                  << "will activate tagger "
-                  << "despite TAGGER value in options be \'false\'." << std::endl;
-              }
-
-              if (options->load_semantic_parser && !options->load_tagger) {
-                options->load_tagger = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting semantic parser "
-                  << "will activate tagger "
-                  << "despite TAGGER value in options be \'false\'." << std::endl;
-              }
-              if (options->load_semantic_parser && !options->load_parser) {
-                options->load_parser = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting semantic parser "
-                  << "will activate dependency parser "
-                  << "despite PARSER value in options be \'false\'." << std::endl;
-              }
-
-              if (options->load_coreference_resolver && !options->load_tagger) {
-                options->load_tagger = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting coreference resolver "
-                  << "will activate tagger "
-                  << "despite TAGGER value in options be \'false\'." << std::endl;
-              }
-              if (options->load_coreference_resolver && !options->load_parser) {
-                options->load_parser = true;
-                LOG(WARNING) << "OPTIONS ARGUMENT OVERRIDE:" << std::endl;
-                LOG(WARNING) << "Requesting coreference resolver "
-                  << "will activate dependency parser "
-                  << "despite PARSER value in options be \'false\'." << std::endl;
-              }
-            }
-
-          }
-
-          {
-            bool read_default_use_tagger = true;
-            bool read_default_use_parser = true;
-            bool read_default_use_morphological_tagger = true;
-            bool read_default_use_entity_recognizer = true;
-            bool read_default_use_semantic_parser = true;
-            bool read_default_use_coreference_resolver = true;
-
-            read_ok &= ReadSettingSafe(setting, "default_use_tagger",
-                                       read_default_use_tagger);
-            read_ok &= ReadSettingSafe(setting, "default_use_parser",
-                                       read_default_use_parser);
-            read_ok &= ReadSettingSafe(setting, "default_use_morphological_tagger",
-                                       read_default_use_morphological_tagger);
-            read_ok &= ReadSettingSafe(setting, "default_use_entity_recognizer",
-                                       read_default_use_entity_recognizer);
-            read_ok &= ReadSettingSafe(setting, "default_use_semantic_parser",
-                                       read_default_use_semantic_parser);
-            read_ok &= ReadSettingSafe(setting, "default_use_coreference_resolver",
-                                       read_default_use_coreference_resolver);
-            if (!read_ok) {
-              std::cerr << "Missing configuration properties" << std::endl;
-              return false;
-            }
-
-            default_use_tagger = read_default_use_tagger;
-            default_use_parser = read_default_use_parser;
-            default_use_morphological_tagger = read_default_use_morphological_tagger;
-            default_use_entity_recognizer = read_default_use_entity_recognizer;
-            default_use_semantic_parser = read_default_use_semantic_parser;
-            default_use_coreference_resolver = read_default_use_coreference_resolver;
-
-            if (default_use_morphological_tagger && !default_use_tagger) {
-              default_use_tagger = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting morphological tagger "
-                << "will activate tagger "
-                << "despite TAGGER value in config file be \'false\'." << std::endl;
-            }
-
-            if (default_use_entity_recognizer && !default_use_tagger) {
-              default_use_tagger = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting entity recognizer "
-                << "will activate tagger "
-                << "despite TAGGER value in config file be \'false\'." << std::endl;
-            }
-
-            if (default_use_semantic_parser && !default_use_tagger) {
-              default_use_tagger = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting semantic parser "
-                << "will activate tagger "
-                << "despite TAGGER value in config file be \'false\'." << std::endl;
-            }
-            if (default_use_semantic_parser && !default_use_parser) {
-              default_use_parser = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting semantic parser "
-                << "will activate dependency parser "
-                << "despite PARSER value in config file be \'false\'." << std::endl;
-            }
-
-            if (default_use_coreference_resolver && !default_use_tagger) {
-              default_use_tagger = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting coreference resolver "
-                << "will activate tagger "
-                << "despite TAGGER value in config file be \'false\'." << std::endl;
-            }
-            if (default_use_coreference_resolver && !default_use_parser) {
-              default_use_parser = true;
-              LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
-              LOG(WARNING) << "Requesting coreference resolver "
-                << "will activate dependency parser "
-                << "despite PARSER value in config file be \'false\'." << std::endl;
-            }
-          }
-
-
-        } catch (libconfig::ParseException e) {
-          std::cerr << "ParseException: " << e.what() << std::endl;
-          return false;
-        } catch (libconfig::FileIOException e) {
-          std::cerr << "FileIOException: " << e.what() << std::endl;
-          return false;
-        } catch (libconfig::ConfigException e) {
-          std::cerr << "ConfigException: " << e.what() << std::endl;
-          return false;
-        } catch (...) {
-          std::cerr << "Unexpected Exception" << std::endl;
-          return false;
+        // Configure logging
+        //
+        if (!config.exists("logging")) {
+          LOG(ERROR) << "Missing 'logging' config section in file: "
+            << filepath_config;
+          return -1;
         }
-      }
-      {
-        libconfig::Setting &setting = config.lookup("logging");
-
-        if (!GLogConfig::SetupGLog(setting)) {
+        libconfig::Setting &logging = config.lookup("logging");
+        if (!GLogConfig::SetupGLog(logging)) {
           return -1;
         }
       }
       _interface = new TurboParserInterface::TurboParserInterface();
-    } catch (...) {
-      return -1;
     }
+
+    {
+      // Configure languages
+        //
+      if (!config.exists("languages")) {
+        LOG(ERROR) << "Missing 'languages' config section in file: "
+          << filepath_config;
+        return -1;
+      }
+      libconfig::Setting &languages = config.lookup("languages");
+
+      if (languages.getLength() > 0) {
+        bool language_found = false;
+        for (int i = 0; i < languages.getLength(); ++i) {
+          libconfig::Setting &language = languages[i];
+          std::string iter_lang;
+          bool read_ok{ true };
+
+          read_ok = ReadSettingSafe(language, "language",
+                                    iter_lang);
+          if (!read_ok)
+            continue;
+          if (read_ok && iter_lang == lang) {
+            language_found = true;
+            read_ok = false;
+
+            read_ok &= ReadSettingSafe(language, "filepath_abbreviations",
+                                       filepath_abbreviations);
+            read_ok &= ReadSettingSafe(language, "filepath_contractions",
+                                       filepath_contractions);
+            read_ok &= ReadSettingSafe(language, "filepath_contraction_suffixes",
+                                       filepath_contraction_suffixes);
+            read_ok &= ReadSettingSafe(language, "filepath_lemmas",
+                                       filepath_lemmas);
+            read_ok &= ReadSettingSafe(language, "filepath_tagger_model",
+                                       filepath_tagger_model);
+            read_ok &= ReadSettingSafe(language, "filepath_morphological_tagger_model",
+                                       filepath_morphological_tagger_model);
+            read_ok &= ReadSettingSafe(language, "filepath_entity_recognizer_model",
+                                       filepath_entity_recognizer_model);
+            read_ok &= ReadSettingSafe(language, "filepath_parser_model",
+                                       filepath_parser_model);
+            read_ok &= ReadSettingSafe(language, "filepath_semantic_parser_model",
+                                       filepath_semantic_parser_model);
+            read_ok &= ReadSettingSafe(language, "filepath_coreference_resolver_model",
+                                       filepath_coreference_resolver_model);
+
+            if (filepath_abbreviations != "")
+              filepath_abbreviations = path + filepath_abbreviations;
+            if (filepath_contractions != "")
+              filepath_contractions = path + filepath_contractions;
+            if (filepath_contraction_suffixes != "")
+              filepath_contraction_suffixes = path + filepath_contraction_suffixes;
+
+            if (filepath_lemmas != "")
+              filepath_lemmas = path + filepath_lemmas;
+
+            if (filepath_tagger_model != "")
+              filepath_tagger_model = path + filepath_tagger_model;
+            if (filepath_morphological_tagger_model != "")
+              filepath_morphological_tagger_model = path + filepath_morphological_tagger_model;
+            if (filepath_entity_recognizer_model != "")
+              filepath_entity_recognizer_model = path + filepath_entity_recognizer_model;
+            if (filepath_parser_model != "")
+              filepath_parser_model = path + filepath_parser_model;
+            if (filepath_semantic_parser_model != "")
+              filepath_semantic_parser_model = path + filepath_semantic_parser_model;
+            if (filepath_coreference_resolver_model != "")
+              filepath_coreference_resolver_model = path + filepath_coreference_resolver_model;
+            break;
+          } else {
+            continue;
+          }
+        }
+        if (!language_found) {
+          LOG(ERROR) << "Requested language does not exist in the config file." << std::endl;
+          return -1;
+        }
+      }
+    }
+
+    {
+      libconfig::Setting &setting = config.lookup("turbotextanalysis");
+
+      // Read from setting
+      bool read_ok = true;
+      {
+        if (options == nullptr) {
+          read_ok &= ReadSettingSafe(setting, "load_tagger",
+                                     local_options.load_tagger);
+          read_ok &= ReadSettingSafe(setting, "load_parser",
+                                     local_options.load_parser);
+          read_ok &= ReadSettingSafe(setting, "load_morphological_tagger",
+                                     local_options.load_morphological_tagger);
+          read_ok &= ReadSettingSafe(setting, "load_entity_recognizer",
+                                     local_options.load_entity_recognizer);
+          read_ok &= ReadSettingSafe(setting, "load_semantic_parser",
+                                     local_options.load_semantic_parser);
+          read_ok &= ReadSettingSafe(setting, "load_coreference_resolver",
+                                     local_options.load_coreference_resolver);
+          if (!read_ok) {
+            std::cerr << "Missing configuration properties" << std::endl;
+            return -1;
+          }
+        }
+
+        if (local_options.load_morphological_tagger && !local_options.load_tagger) {
+          local_options.load_tagger = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting morphological tagger "
+            << "will activate tagger "
+            << "despite TAGGER value in options be \'false\'." << std::endl;
+        }
+
+        if (local_options.load_entity_recognizer && !local_options.load_tagger) {
+          local_options.load_tagger = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting entity recognizer "
+            << "will activate tagger "
+            << "despite TAGGER value in options be \'false\'." << std::endl;
+        }
+
+        if (local_options.load_semantic_parser && !local_options.load_tagger) {
+          local_options.load_tagger = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting semantic parser "
+            << "will activate tagger "
+            << "despite TAGGER value in options be \'false\'." << std::endl;
+        }
+        if (local_options.load_semantic_parser && !local_options.load_parser) {
+          local_options.load_parser = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting semantic parser "
+            << "will activate dependency parser "
+            << "despite PARSER value in options be \'false\'." << std::endl;
+        }
+
+        if (local_options.load_coreference_resolver && !local_options.load_tagger) {
+          local_options.load_tagger = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting coreference resolver "
+            << "will activate tagger "
+            << "despite TAGGER value in options be \'false\'." << std::endl;
+        }
+        if (local_options.load_coreference_resolver && !local_options.load_parser) {
+          local_options.load_parser = true;
+          LOG(WARNING) << "OPTIONS OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting coreference resolver "
+            << "will activate dependency parser "
+            << "despite PARSER value in options be \'false\'." << std::endl;
+        }
+      }
+
+      {
+        bool read_default_use_tagger = true;
+        bool read_default_use_parser = true;
+        bool read_default_use_morphological_tagger = true;
+        bool read_default_use_entity_recognizer = true;
+        bool read_default_use_semantic_parser = true;
+        bool read_default_use_coreference_resolver = true;
+
+        read_ok &= ReadSettingSafe(setting, "default_use_tagger",
+                                   read_default_use_tagger);
+        read_ok &= ReadSettingSafe(setting, "default_use_parser",
+                                   read_default_use_parser);
+        read_ok &= ReadSettingSafe(setting, "default_use_morphological_tagger",
+                                   read_default_use_morphological_tagger);
+        read_ok &= ReadSettingSafe(setting, "default_use_entity_recognizer",
+                                   read_default_use_entity_recognizer);
+        read_ok &= ReadSettingSafe(setting, "default_use_semantic_parser",
+                                   read_default_use_semantic_parser);
+        read_ok &= ReadSettingSafe(setting, "default_use_coreference_resolver",
+                                   read_default_use_coreference_resolver);
+        if (!read_ok) {
+          std::cerr << "Missing configuration properties" << std::endl;
+          return -1;
+        }
+
+        default_use_tagger = read_default_use_tagger;
+        default_use_parser = read_default_use_parser;
+        default_use_morphological_tagger = read_default_use_morphological_tagger;
+        default_use_entity_recognizer = read_default_use_entity_recognizer;
+        default_use_semantic_parser = read_default_use_semantic_parser;
+        default_use_coreference_resolver = read_default_use_coreference_resolver;
+
+        if (default_use_morphological_tagger && !default_use_tagger) {
+          default_use_tagger = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting morphological tagger "
+            << "will activate tagger "
+            << "despite TAGGER value in config file be \'false\'." << std::endl;
+        }
+
+        if (default_use_entity_recognizer && !default_use_tagger) {
+          default_use_tagger = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting entity recognizer "
+            << "will activate tagger "
+            << "despite TAGGER value in config file be \'false\'." << std::endl;
+        }
+
+        if (default_use_semantic_parser && !default_use_tagger) {
+          default_use_tagger = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting semantic parser "
+            << "will activate tagger "
+            << "despite TAGGER value in config file be \'false\'." << std::endl;
+        }
+        if (default_use_semantic_parser && !default_use_parser) {
+          default_use_parser = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting semantic parser "
+            << "will activate dependency parser "
+            << "despite PARSER value in config file be \'false\'." << std::endl;
+        }
+
+        if (default_use_coreference_resolver && !default_use_tagger) {
+          default_use_tagger = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting coreference resolver "
+            << "will activate tagger "
+            << "despite TAGGER value in config file be \'false\'." << std::endl;
+        }
+        if (default_use_coreference_resolver && !default_use_parser) {
+          default_use_parser = true;
+          LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+          LOG(WARNING) << "Requesting coreference resolver "
+            << "will activate dependency parser "
+            << "despite PARSER value in config file be \'false\'." << std::endl;
+        }
+      }
+    }
+  } catch (libconfig::ParseException e) {
+    LOG(ERROR) << "ParseException: " << e.what()
+      << std::endl << "error: " << e.getError()
+      << std::endl << "file: " << e.getFile()
+      << std::endl << "line: " << e.getLine();
+    return -1;
+  } catch (libconfig::FileIOException e) {
+    LOG(ERROR) << "FileIOException: " << e.what();
+    return -1;
+  } catch (libconfig::ConfigException e) {
+    LOG(ERROR) << "ConfigException: " << e.what();
+    return -1;
+  } catch (...) {
+    LOG(ERROR) << "Unexpected Exception";
+    return -1;
   }
 
-  if (lang == "en") {
-    filepath_abbreviations += "english_abbreviations.txt";
-    filepath_contractions += "english_contractions.txt";
-    filepath_contraction_suffixes += "english_contraction_suffixes.txt";
+  if (filepath_tagger_model == "")
+    local_options.load_tagger = false;
+  if (filepath_morphological_tagger_model == "")
+    local_options.load_morphological_tagger = false;
+  if (filepath_entity_recognizer_model == "")
+    local_options.load_entity_recognizer = false;
+  if (filepath_parser_model == "")
+    local_options.load_parser = false;
+  if (filepath_semantic_parser_model == "")
+    local_options.load_semantic_parser = false;
+  if (filepath_coreference_resolver_model == "")
+    local_options.load_coreference_resolver = false;
 
-    filepath_lemmas += "english_lemmas.txt";
-
-    filepath_tagger_model += "english_proj_tagger.model";
-    filepath_morphological_tagger_model += "english_morphological_tagger.model";
-    filepath_entity_recognizer_model += "english_entity_recognizer.model";
-    filepath_parser_model += "english_parser.model";
-    filepath_semantic_parser_model += "english_semantic_parser.model";
-    filepath_coreference_resolver_model += "english_coreference_resolver.model";
+  if (local_options.load_morphological_tagger && !local_options.load_tagger) {
+    local_options.load_morphological_tagger = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting morphological tagger "
+      << "will not be accepted, as there is now tagger model." << std::endl;
   }
-  if (lang == "es") {
-    filepath_abbreviations += "spanish_abbreviations.txt";
-    filepath_contractions += "spanish_contractions.txt";
-    filepath_contraction_suffixes += "spanish_contraction_suffixes.txt";
 
-    filepath_lemmas += "spanish_lemmas.txt";
-
-    filepath_tagger_model += "spanish_tagger.model";
-    filepath_morphological_tagger_model += "spanish_morphological_tagger.model";
-    filepath_entity_recognizer_model += "spanish_entity_recognizer.model";
-    filepath_parser_model += "spanish_parser.model";
-    filepath_semantic_parser_model += "spanish_semantic_parser.model";
-    filepath_coreference_resolver_model += "spanish_coreference_resolver.model";
+  if (local_options.load_entity_recognizer && !local_options.load_tagger) {
+    local_options.load_entity_recognizer = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting entity recognizer "
+      << "will not be accepted, as there is now tagger model." << std::endl;
   }
+
+  if (local_options.load_semantic_parser && !local_options.load_tagger) {
+    local_options.load_semantic_parser = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting semantic parser "
+      << "will not be accepted, as there is now tagger model." << std::endl;
+  }
+  if (local_options.load_semantic_parser && !local_options.load_parser) {
+    local_options.load_semantic_parser = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting semantic parser "
+      << "will not be accepted, as there is now parser model." << std::endl;
+  }
+
+  if (local_options.load_coreference_resolver && !local_options.load_tagger) {
+    local_options.load_coreference_resolver = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting coreference resolver "
+      << "will not be accepted, as there is now tagger model." << std::endl;
+  }
+  if (local_options.load_coreference_resolver && !local_options.load_parser) {
+    local_options.load_coreference_resolver = false;
+    LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
+    LOG(WARNING) << "Requesting coreference resolver "
+      << "will not be accepted, as there is now parser model." << std::endl;
+  }
+
   TurboTokenizer *tokenizer = new TurboTokenizer;
-  tokenizer->LoadAbbreviations(filepath_abbreviations);
-  tokenizer->LoadContractions(filepath_contractions);
-  tokenizer->LoadContractionSuffixes(filepath_contraction_suffixes);
+  if (filepath_abbreviations != "")
+    tokenizer->LoadAbbreviations(filepath_abbreviations);
+  if (filepath_contractions != "")
+    tokenizer->LoadContractions(filepath_contractions);
+  if (filepath_contraction_suffixes != "")
+    tokenizer->LoadContractionSuffixes(filepath_contraction_suffixes);
 
   TurboLemmatizer *lemmatizer = new TurboLemmatizer;
-  lemmatizer->LoadLemmas(filepath_lemmas);
+  if (filepath_lemmas != "")
+    lemmatizer->LoadLemmas(filepath_lemmas);
 
-  TurboParserInterface::TurboTaggerWorker *tagger;
-  TurboParserInterface::TurboMorphologicalTaggerWorker *morphological_tagger;
-  TurboParserInterface::TurboEntityRecognizerWorker *entity_recognizer;
-  TurboParserInterface::TurboParserWorker *parser;
-  TurboParserInterface::TurboSemanticParserWorker *semantic_parser;
-  TurboParserInterface::TurboCoreferenceResolverWorker * coreference_resolver;
+  TurboParserInterface::TurboTaggerWorker *tagger{ nullptr };
+  TurboParserInterface::TurboMorphologicalTaggerWorker *morphological_tagger{ nullptr };
+  TurboParserInterface::TurboEntityRecognizerWorker *entity_recognizer{ nullptr };
+  TurboParserInterface::TurboParserWorker *parser{ nullptr };
+  TurboParserInterface::TurboSemanticParserWorker *semantic_parser{ nullptr };
+  TurboParserInterface::TurboCoreferenceResolverWorker * coreference_resolver{ nullptr };
 
   //***********************
   // tagger
   //***********************
 
-  if (load_tagger) {
+  if (local_options.load_tagger) {
     tagger = _interface->CreateTagger();
     tagger->
       LoadTaggerModel(filepath_tagger_model);
@@ -1101,7 +1139,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   //***********************
   // morphological_tagger
   //***********************
-  if (load_morphological_tagger) {
+  if (local_options.load_morphological_tagger) {
     morphological_tagger = _interface->CreateMorphologicalTagger();
     morphological_tagger->
       LoadMorphologicalTaggerModel(filepath_morphological_tagger_model);
@@ -1109,7 +1147,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   //***********************
   // entity_recognizer
   //***********************
-  if (load_entity_recognizer) {
+  if (local_options.load_entity_recognizer) {
     entity_recognizer = _interface->CreateEntityRecognizer();
     entity_recognizer->
       LoadEntityRecognizerModel(filepath_entity_recognizer_model);
@@ -1117,7 +1155,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   //***********************
   // parser
   //***********************
-  if (load_parser) {
+  if (local_options.load_parser) {
     parser = _interface->CreateParser();
     parser->
       LoadParserModel(filepath_parser_model);
@@ -1125,7 +1163,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   //***********************
   // semantic_parser
   //***********************
-  if (load_semantic_parser) {
+  if (local_options.load_semantic_parser) {
     semantic_parser = _interface->CreateSemanticParser();
     semantic_parser->
       LoadSemanticParserModel(filepath_semantic_parser_model);
@@ -1133,7 +1171,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   //***********************
   // coreference_resolver
   //***********************
-  if (load_coreference_resolver) {
+  if (local_options.load_coreference_resolver) {
     coreference_resolver = _interface->CreateCoreferenceResolver();
     coreference_resolver->
       LoadCoreferenceResolverModel(filepath_coreference_resolver_model);
@@ -1142,16 +1180,15 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   _worker_map.
     AddLanguageWorkers(lang,
                        tokenizer,
-                       (load_tagger) ? lemmatizer : nullptr,
-                       (load_tagger) ? tagger : nullptr,
-                       (load_morphological_tagger) ? morphological_tagger : nullptr,
-                       (load_entity_recognizer) ? entity_recognizer : nullptr,
-                       (load_parser) ? parser : nullptr,
-                       (load_semantic_parser) ? semantic_parser : nullptr,
-                       (load_coreference_resolver) ? coreference_resolver : nullptr);
+                       (local_options.load_tagger) ? lemmatizer : nullptr,
+                       (local_options.load_tagger) ? tagger : nullptr,
+                       (local_options.load_morphological_tagger) ? morphological_tagger : nullptr,
+                       (local_options.load_entity_recognizer) ? entity_recognizer : nullptr,
+                       (local_options.load_parser) ? parser : nullptr,
+                       (local_options.load_semantic_parser) ? semantic_parser : nullptr,
+                       (local_options.load_coreference_resolver) ? coreference_resolver : nullptr);
 
   LOG(INFO) << "Finished LoadLanguage";
 
   return 0;
 }
-

@@ -11,25 +11,9 @@
 #define TURBOTEXTANALYSIS_H_
 
 #include "TurboTokenAnalysis.h"
+#include "ps_textanalysistemplate.h"
 #include <string>
 #include <vector>
-
-class CPBSSink {
-public:
-  CPBSSink() {};
-  virtual ~CPBSSink() {};
-
-  virtual int PutToken(const std::string &word,
-                       int len,
-                       int start_pos,
-                       internal_TokenKind kind) = 0;
-  virtual int PutFeature(const std::string &feature,
-                         const std::string &value) = 0;
-  virtual int EndSentence() = 0;
-  virtual int PutDocumentFeature(const std::string &feature,
-                                 const std::string &value) = 0;
-};
-
 
 class AnalyseOptions {
 public:
@@ -66,7 +50,7 @@ public:
               const std::vector<std::vector<int> > &sentences_end_positions,
               CPBSSink* pbssink,
               AnalyseOptions * options = nullptr);
-  int LoadLanguage(const std::string &language, 
+  int LoadLanguage(const std::string &language,
                    const std::string &path,
                    LoadOptions * options = nullptr);
 
@@ -74,6 +58,5 @@ protected:
   // Object for token-level analysis.
   CTurboTokenAnalysis m_token_analysis;
 };
-
 
 #endif /* TURBOTEXTANALYSIS_H_ */

@@ -9,33 +9,19 @@ import sys
 import pdb
 
 # Get the classes from the c++ headers.
-
-cdef extern from "../TurboTextAnalysis/TurboTokenAnalysis.h":
-    cpdef cppclass internal_TokenKind:
-        pass
  
-cdef extern from "../TurboTextAnalysis/TurboTokenAnalysis.h" namespace "internal_TokenKind":
-    cdef internal_TokenKind unknown
-    cdef internal_TokenKind sep_space
-    cdef internal_TokenKind sep_sentence
-    cdef internal_TokenKind sep_paragraph
-    cdef internal_TokenKind sep_quote
-    cdef internal_TokenKind sep_dash
-    cdef internal_TokenKind sep_punct
-    cdef internal_TokenKind number
-    cdef internal_TokenKind alphanum
-    cdef internal_TokenKind alpha
-
 cdef extern from "../TurboTextAnalysis/TurboTextAnalysis.h":
     cdef cppclass CPBSSink:
         CPBSSink() except +
         int PutToken(string word, 
                     int len,
                     int start_pos,
-                    internal_TokenKind kind)
-        int PutFeature(string feature, string value) 
+                    int kind)
+        int PutFeature(string feature, 
+                       string value) 
         int EndSentence()
-        int PutDocumentFeature(string feature, string value)
+        int PutDocumentFeature(string feature,
+                               string value)
 
     cdef cppclass AnalyseOptions:
         bool use_tagger
@@ -88,7 +74,7 @@ cdef extern from "CppToPyTurboSink.h":
         int PutToken(string word, 
                     int len,
                     int start_pos,
-                    internal_TokenKind kind)
+                    int kind)
         int PutFeature(string feature, string value) 
         int EndSentence()
         int PutDocumentFeature(string feature, string value)
@@ -130,24 +116,6 @@ cdef class PyLoadOptions:
 
     def __dealloc__(self):
         pass
-
-cdef class Pyinternal_TokenKind:
-  cdef internal_TokenKind thisobj
-  def __cinit__(self, int val):
-    self.thisobj = <internal_TokenKind> val
-
-  def get_internal_TokenKind_type(self):
-    cdef c = {<int>unknown : "unknown", 
-    <int> sep_space : "sep_space", 
-    <int> sep_sentence : "sep_sentence", 
-    <int> sep_paragraph : "sep_paragraph", 
-    <int> sep_quote : "sep_quote", 
-    <int> sep_dash : "sep_dash", 
-    <int> sep_punct : "sep_punct", 
-    <int> number : "number", 
-    <int> alphanum : "alphanum", 
-    <int> alpha : "alpha"	}
-    return c[<int>self.thisobj]
 
 cdef class PyCPBSSink:	
     cdef CPBSSink* c_sink

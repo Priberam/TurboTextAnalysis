@@ -14,7 +14,7 @@
 #include "Alphabet.h"
 
 class TurboTokenContraction {
- public:
+public:
   int GetNumWords() { return (int)words_.size(); }
   const std::vector<std::string> &words() { return words_; }
   const std::vector<int> &start_positions() { return start_positions_; }
@@ -27,14 +27,14 @@ class TurboTokenContraction {
     end_positions_ = end_positions;
   }
 
- protected:
+protected:
   std::vector<std::string> words_;
   std::vector<int> start_positions_;
   std::vector<int> end_positions_;
 };
 
 class TurboTokenizer {
- public:
+public:
   TurboTokenizer() {};
   virtual ~TurboTokenizer() {
     for (int i = 0; i < contractions_.size(); ++i) {
@@ -58,7 +58,7 @@ class TurboTokenizer {
                      std::vector<int>* start_positions,
                      std::vector<int>* end_positions);
 
- protected:
+protected:
   void LookForSubwords(const std::string &sentence,
                        int start_position,
                        int end_position,
@@ -100,7 +100,7 @@ class TurboTokenizer {
                          int lower_bound_start, int upper_bound_end,
                          int *start_position, int *end_position);
 
- protected:
+protected:
   void AddWordToken(const std::string &word,
                     int start_position,
                     int end_position,
@@ -118,7 +118,7 @@ class TurboTokenizer {
   bool IsPattern(const std::string &word, const std::string &pattern,
                  int position, int *length) {
     if (0 == word.compare(position, pattern.length(), pattern)) {
-      *length = (int) pattern.length();
+      *length = (int)pattern.length();
       return true;
     }
     return false;
@@ -183,7 +183,7 @@ class TurboTokenizer {
 
   bool EndsWithPeriod(const char* word, int len) {
     if (len <= 0) return false;
-    return IsPeriod(word[len-1]);
+    return IsPeriod(word[len - 1]);
   }
 
   bool HasInternalPeriod(const char* word, int len) {
@@ -256,7 +256,7 @@ class TurboTokenizer {
     // Note: the lower-case transformation below will not work for UTF-8 strings.
     std::transform(word.begin(), word.end(), word_lc.begin(), ::tolower);
     int id = contraction_dictionary_.Lookup(word_lc + "#LC");
-    return (id >= 0)? contractions_[id] : NULL;
+    return (id >= 0) ? contractions_[id] : NULL;
   }
 
 protected:

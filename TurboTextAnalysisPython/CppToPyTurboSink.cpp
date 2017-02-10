@@ -1,4 +1,3 @@
-
 #include "CppToPyTurboSink.h"
 #include <iostream>
 #include <string>
@@ -11,51 +10,44 @@ CppToPyTurboSink::~CppToPyTurboSink() {
   Py_XDECREF(this->m_pysink);
 };
 
-int CppToPyTurboSink::PutToken(const std::string &word,
+int CppToPyTurboSink::PutToken(const char * word,
                                int len,
                                int start_pos,
-                               internal_TokenKind kind) {
+                               TokenKind kind) {
   PyObject* myResult = PyObject_CallMethod(m_pysink,
-                                           (char*)"put_token",
+    (char*)"put_token",
                                            (char*)"(siii)",
-                                           (char*)word.c_str(),
+                                           (char*)word,
                                            len,
                                            start_pos,
                                            (int)kind);
   return 0;
 };
 
-
-int CppToPyTurboSink::PutFeature(const std::string &feature,
-                                 const std::string &value) {
+int CppToPyTurboSink::PutFeature(const char * feature,
+                                 const char * value) {
   PyObject* myResult = PyObject_CallMethod(m_pysink,
-                                           (char*)"put_feature",
+    (char*)"put_feature",
                                            (char*)"(ss)",
-                                           (char*)feature.c_str(),
-                                           (char*)value.c_str());
+                                           (char*)feature,
+                                           (char*)value);
 
   return 0;
 };
 
-
 int CppToPyTurboSink::EndSentence() {
   PyObject* myResult = PyObject_CallMethod(m_pysink,
-                                           (char*)"end_sentence",
+    (char*)"end_sentence",
                                            NULL);
   return 0;
 };
 
-
-int CppToPyTurboSink::PutDocumentFeature(const std::string &feature,
-                                         const std::string &value) {
+int CppToPyTurboSink::PutDocumentFeature(const char * feature,
+                                         const char * value) {
   PyObject* myResult = PyObject_CallMethod(m_pysink,
-                                           (char*)"put_document_feature",
+    (char*)"put_document_feature",
                                            (char*)"(ss)",
-                                           (char*)feature.c_str(),
-                                           (char*)value.c_str());
+                                           (char*)feature,
+                                           (char*)value);
   return 0;
 };
-
-
-
-

@@ -17,20 +17,38 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7F68B0C1-9
 		Data\english_abbreviations.txt = Data\english_abbreviations.txt
 		Data\english_contraction_suffixes.txt = Data\english_contraction_suffixes.txt
 		Data\english_contractions.txt = Data\english_contractions.txt
+		Data\english_coreference_resolver.model = Data\english_coreference_resolver.model
 		Data\english_entity_recognizer.model = Data\english_entity_recognizer.model
 		Data\english_lemmas.txt = Data\english_lemmas.txt
 		Data\english_morphological_tagger.model = Data\english_morphological_tagger.model
+		Data\english_parser.model = Data\english_parser.model
 		Data\english_proj_tagger.model = Data\english_proj_tagger.model
+		Data\english_semantic_parser.model = Data\english_semantic_parser.model
+		Data\spanish_abbreviations.txt = Data\spanish_abbreviations.txt
+		Data\spanish_contraction_suffixes.txt = Data\spanish_contraction_suffixes.txt
+		Data\spanish_contractions.txt = Data\spanish_contractions.txt
+		Data\spanish_coreference_resolver.model = Data\spanish_coreference_resolver.model
+		Data\spanish_entity_recognizer.model = Data\spanish_entity_recognizer.model
+		Data\spanish_lemmas.txt = Data\spanish_lemmas.txt
+		Data\spanish_morphological_tagger.model = Data\spanish_morphological_tagger.model
+		Data\spanish_parser.model = Data\spanish_parser.model
+		Data\spanish_semantic_parser.model = Data\spanish_semantic_parser.model
+		Data\spanish_tagger.model = Data\spanish_tagger.model
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Deps", "Deps", "{9395D538-66B6-4CF0-8FCF-92BEE518462E}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deps", "deps", "{9395D538-66B6-4CF0-8FCF-92BEE518462E}"
 	ProjectSection(SolutionItems) = preProject
-		Deps\hashing.h = Deps\hashing.h
+		deps\encoding.h = deps\encoding.h
+		deps\hashing.h = deps\hashing.h
 	EndProjectSection
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TurboTextAnalysisPython", "TurboTextAnalysisPython\TurboTextAnalysisPython.pyproj", "{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DemoTextAnalysisTest", "DemoTextAnalysisTest\DemoTextAnalysisTest.vcxproj", "{4E04B408-FFFA-46CA-938A-11AAED9954D5}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CrossPlatfTurboTextAnalysis", "CrossPlatfTurboTextAnalysis\CrossPlatfTurboTextAnalysis.vcxproj", "{E04D44E0-96F4-4B79-9DBF-53160C67276F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestCrossPlatfTurboTextAnalysis", "TestCrossPlatfTurboTextAnalysis\TestCrossPlatfTurboTextAnalysis.vcxproj", "{534D2D90-2427-4495-B9AE-D9B30510DC29}"
 EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
@@ -89,6 +107,38 @@ Global
 		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|Win32.Build.0 = Release|Win32
 		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|x64.ActiveCfg = Release|x64
 		{4E04B408-FFFA-46CA-938A-11AAED9954D5}.Release|x64.Build.0 = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Debug|Win32.Build.0 = Debug|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Debug|x64.ActiveCfg = Debug|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Debug|x64.Build.0 = Debug|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Any CPU.ActiveCfg = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Any CPU.Build.0 = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Win32.ActiveCfg = Release|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Win32.Build.0 = Release|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.ActiveCfg = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.Build.0 = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Any CPU.ActiveCfg = Release|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Win32.ActiveCfg = Release|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Win32.Build.0 = Release|Win32
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|x64.ActiveCfg = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|x64.Build.0 = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Debug|Win32.ActiveCfg = Debug|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Debug|Win32.Build.0 = Debug|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Debug|x64.ActiveCfg = Debug|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Debug|x64.Build.0 = Debug|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Any CPU.ActiveCfg = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Any CPU.Build.0 = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Win32.ActiveCfg = Release|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Win32.Build.0 = Release|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.ActiveCfg = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.Build.0 = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Any CPU.ActiveCfg = Release|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Win32.ActiveCfg = Release|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Win32.Build.0 = Release|Win32
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|x64.ActiveCfg = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

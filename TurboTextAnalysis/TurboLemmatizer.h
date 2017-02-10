@@ -14,8 +14,6 @@
 #include "hashing.h"
 #include "Alphabet.h"
 
-
-
 class TurboLemmatizer {
 public:
   TurboLemmatizer() {};
@@ -27,12 +25,10 @@ public:
                          const std::vector<std::string> &pos,
                          std::vector<std::string>* lemmas);
 protected:
-protected:
 
   typedef HashablePair<std::string, std::string> FormAndPosPair;
   std::unordered_map<FormAndPosPair, std::string, FormAndPosPair, FormAndPosPair>
     forms_and_pos_to_lemmas_;
-
 };
 
 #endif /* TURBOLEMMATIZER_H_ */

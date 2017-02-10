@@ -204,8 +204,8 @@ void TurboTokenizer::LoadAbbreviations(const std::string filepath) {
       if (fields.size() < 2) {
         CHECK_EQ(fields.size(), 1);
         abbreviation = fields[0];
-        LOG(INFO) << "Warning: abbreviation " << abbreviation
-                  << " missing the \"case-sensitive\" option! Taken as \"0\".";
+       // LOG(INFO) << "Warning: abbreviation " << abbreviation
+       //           << " missing the \"case-sensitive\" option! Taken as \"0\".";
       } else {
         abbreviation = fields[0];
         case_sensitive = (fields[1] != "0");

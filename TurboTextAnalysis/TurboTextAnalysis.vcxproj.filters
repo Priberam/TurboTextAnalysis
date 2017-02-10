@@ -50,6 +50,9 @@
     <ClInclude Include="glogconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ps_textanalysistemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Makefile" />

@@ -70,8 +70,10 @@ public:
         google::SetLogDestination(google::GLOG_ERROR,
                                   path_glog_error.c_str());
 
-      char * logging_name_leak = strdup(logging_name.c_str());
-      google::InitGoogleLogging(logging_name_leak);
+    //  char * logging_name_leak = strdup(logging_name.c_str());
+      char * logger_name = new char[50];
+      *strcpy(logger_name, logging_name.c_str());
+      google::InitGoogleLogging(logger_name);
       GlogIsInit::Set(true);
     } catch (libconfig::ParseException e) {
       std::cerr << "ParseException: " << e.what() << std::endl;

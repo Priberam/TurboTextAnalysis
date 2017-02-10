@@ -18,10 +18,15 @@ public:
   DocumentSink();
   virtual ~DocumentSink();
 
-  int PutToken(const std::string &word, int len, int start_pos, internal_TokenKind kind);
-  int PutFeature(const std::string &feature, const std::string &value);
+  int PutToken(const char * word,
+               int len,
+               int start_pos,
+               TokenKind kind);
+  int PutFeature(const char * feature,
+                 const char * value);
   int EndSentence();
-  int PutDocumentFeature(const std::string &feature, const std::string &value);
+  int PutDocumentFeature(const char * feature,
+                         const char * value);
 
   void PrintContent();
 protected:
@@ -30,18 +35,17 @@ protected:
 public:
   std::vector<TokenInfo> token_data;
   std::unordered_map<std::string, std::string> document_data;
-
 };
 
 DocumentSink::DocumentSink() {}
 DocumentSink::~DocumentSink() {}
 
-int DocumentSink::PutToken(const std::string &word,
+int DocumentSink::PutToken(const char * word,
                            int len,
                            int start_pos,
-                           internal_TokenKind kind) {
+                           TokenKind kind) {
   std::cout << "\tPutToken(" << word << ", " << len << ", " << start_pos
-    // << ", " << kind 
+    // << ", " << kind
     << ")" << std::endl;
 
   last_word = word;
@@ -55,8 +59,8 @@ int DocumentSink::PutToken(const std::string &word,
   return 0;
 }
 
-int DocumentSink::PutFeature(const std::string &feature,
-                             const std::string &value) {
+int DocumentSink::PutFeature(const char * feature,
+                             const char * value) {
   std::cout << "\t\tPutFeature(" << feature << ", " << value << ")" << std::endl;
 
   token_data[current_index].token_features[feature] = value;
@@ -69,8 +73,8 @@ int DocumentSink::EndSentence() {
   return 0;
 }
 
-int DocumentSink::PutDocumentFeature(const std::string &feature,
-                                     const std::string &value) {
+int DocumentSink::PutDocumentFeature(const char * feature,
+                                     const char * value) {
   std::cout << "PutDocumentFeature(" << feature << ", " << value << ")" << std::endl;
 
   document_data[feature] = value;
@@ -100,7 +104,7 @@ int main() {
   std::string language = "en";
   std::string path = "../Data/";
   std::string text = u8"Obama visits Portugal. He is staying 3 days.";
-  
+
   LoadOptions load_options;
   load_options.load_tagger = true;
   load_options.load_parser = false;
@@ -108,7 +112,7 @@ int main() {
   load_options.load_entity_recognizer = true;
   load_options.load_semantic_parser = false;
   load_options.load_coreference_resolver = false;
-  
+
   int retval = text_analyser->LoadLanguage(language, path, &load_options);
   if (retval != 0)
     std::cerr << "Lexicon initialization failed, check path and language" << std::endl;
@@ -123,8 +127,8 @@ int main() {
   options.use_semantic_parser = false;
   options.use_coreference_resolver = false;
 
-  retval = text_analyser->Analyse(language, 
-                                  text, 
+  retval = text_analyser->Analyse(language,
+                                  text,
                                   &doc_sink,
                                   &options);
   if (retval != 0)
@@ -155,8 +159,6 @@ int main() {
 
   //doc_sink.PrintContent();
 
-
   delete text_analyser;
   return 0;
 }
-

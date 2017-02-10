@@ -12,6 +12,7 @@
 #include "TurboLemmatizer.h"
 #include <string>
 #include <map>
+#include<mutex>
 
 class CTurboWorkers {
 public:
@@ -96,17 +97,16 @@ public:
                           TurboParserInterface::TurboSemanticParserWorker *semantic_parser,
                           TurboParserInterface::TurboCoreferenceResolverWorker * coreference_resolver) {
     insert(std::pair<std::string, CTurboWorkers*>
-           (language,
-            new CTurboWorkers(tokenizer,
-                              lemmatizer,
-                              tagger,
-                              morphological_tagger,
-                              entity_recognizer,
-                              parser,
-                              semantic_parser,
-                              coreference_resolver)));
+      (language,
+       new CTurboWorkers(tokenizer,
+                         lemmatizer,
+                         tagger,
+                         morphological_tagger,
+                         entity_recognizer,
+                         parser,
+                         semantic_parser,
+                         coreference_resolver)));
   }
-
 
   bool FindLanguageWorkers(const std::string &language,
                            CTurboWorkers* turbo_workers) {
@@ -118,6 +118,9 @@ public:
       return false;
     }
   }
+public:
+  //To lock LoadLanguage access
+  std::mutex m_lock;
 };
 
 #endif /* TURBOWORKERS_H_ */

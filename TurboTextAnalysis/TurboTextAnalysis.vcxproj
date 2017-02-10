@@ -120,12 +120,12 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);__unix__</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\Projectos\git\TurboParser\libturboparser;F:\Projectos\git\TurboParser\src\tagger;F:\Projectos\git\TurboParser\src\semantic_parser;F:\Projectos\git\TurboParser\src\parser;F:\Projectos\git\TurboParser\src\entity_recognizer;F:\Projectos\git\TurboParser\src\sequence;F:\Projectos\git\TurboParser\src\classifier;F:\Projectos\git\TurboParser\src\util;F:\Projectos\git\TurboParser\deps\AD3-2.0.2;F:\Projectos\git\TurboParser\deps\glog-0.3.2\src\windows;F:\Projectos\git\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\Projectos\git\TurboParser\vsprojects\Debug;F:\Projectos\git\TurboParser\deps\glog-0.3.2\Debug;F:\Projectos\git\TurboParser\deps\gflags-2.0\Debug;F:\Projectos\git\TurboParser\deps\AD3-2.0.2\vsprojects\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libturboparser.lib;AD3.lib;libgflags-debug.lib;libglog.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -136,19 +136,19 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;GOOGLE_GLOG_DLL_DECL=;GFLAGS_DLL_DECL=;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;..\deps;..\Deps\libconfig-1.4.9\lib;C:\Projects\TurboParser\libturboparser;C:\Projects\TurboParser\src\util;C:\Projects\TurboParser\src\classifier;C:\Projects\TurboParser\src\sequence;C:\Projects\TurboParser\src\tagger;C:\Projects\TurboParser\src\parser;C:\Projects\TurboParser\src\entity_recognizer;C:\Projects\TurboParser\src\semantic_parser;C:\Projects\TurboParser\src\coreference_resolver;C:\Projects\TurboParser\src\morphological_tagger;C:\Projects\TurboParser\deps\AD3-2.0.2;C:\Projects\TurboParser\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>F:\Projectos\git\TurboParser\vsprojects\Debug;F:\Projectos\git\TurboParser\deps\glog-0.3.2\Debug;F:\Projectos\git\TurboParser\deps\gflags-2.0\Debug;F:\Projectos\git\TurboParser\deps\AD3-2.0.2\vsprojects\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>libturboparser.lib;AD3.lib;libgflags-debug.lib;libglog.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalDependencies>libturboparser.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>C:\Projects\TurboParser\vsprojects\x64\Debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Projects\TurboParser_DN\vsprojects\x64\Debug</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -160,7 +160,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);;__unix__</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;F:\Projectos\git\TurboParser\libturboparser;F:\Projectos\git\TurboParser\src\tagger;F:\Projectos\git\TurboParser\src\semantic_parser;F:\Projectos\git\TurboParser\src\parser;F:\Projectos\git\TurboParser\src\entity_recognizer;F:\Projectos\git\TurboParser\src\sequence;F:\Projectos\git\TurboParser\src\classifier;F:\Projectos\git\TurboParser\src\util;F:\Projectos\git\TurboParser\deps\AD3-2.0.2;F:\Projectos\git\TurboParser\deps\glog-0.3.2\src\windows;F:\Projectos\git\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -178,7 +178,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);;__unix__</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;F:\Projectos\git\TurboParser\libturboparser;F:\Projectos\git\TurboParser\src\tagger;F:\Projectos\git\TurboParser\src\semantic_parser;F:\Projectos\git\TurboParser\src\parser;F:\Projectos\git\TurboParser\src\entity_recognizer;F:\Projectos\git\TurboParser\src\sequence;F:\Projectos\git\TurboParser\src\classifier;F:\Projectos\git\TurboParser\src\util;F:\Projectos\git\TurboParser\deps\AD3-2.0.2;F:\Projectos\git\TurboParser\deps\glog-0.3.2\src\windows;F:\Projectos\git\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -196,7 +196,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;GOOGLE_GLOG_DLL_DECL=;GFLAGS_DLL_DECL=;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;..\deps;..\Deps\libconfig-1.4.9\lib;C:\Projects\TurboParser\libturboparser;C:\Projects\TurboParser\src\util;C:\Projects\TurboParser\src\classifier;C:\Projects\TurboParser\src\sequence;C:\Projects\TurboParser\src\tagger;C:\Projects\TurboParser\src\parser;C:\Projects\TurboParser\src\entity_recognizer;C:\Projects\TurboParser\src\semantic_parser;C:\Projects\TurboParser\src\coreference_resolver;C:\Projects\TurboParser\src\morphological_tagger;C:\Projects\TurboParser\deps\AD3-2.0.2;C:\Projects\TurboParser\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -212,7 +212,7 @@
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
       <AdditionalDependencies>libturboparser.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Projects\TurboParser\vsprojects\x64\Release</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Projects\TurboParser_DN\vsprojects\x64\Release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release O0|x64'">
@@ -224,7 +224,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;GOOGLE_GLOG_DLL_DECL=;GFLAGS_DLL_DECL=;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;..\deps;..\Deps\libconfig-1.4.9\lib;C:\Projects\TurboParser\libturboparser;C:\Projects\TurboParser\src\util;C:\Projects\TurboParser\src\classifier;C:\Projects\TurboParser\src\sequence;C:\Projects\TurboParser\src\tagger;C:\Projects\TurboParser\src\parser;C:\Projects\TurboParser\src\entity_recognizer;C:\Projects\TurboParser\src\semantic_parser;C:\Projects\TurboParser\src\coreference_resolver;C:\Projects\TurboParser\src\morphological_tagger;C:\Projects\TurboParser\deps\AD3-2.0.2;C:\Projects\TurboParser\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
@@ -240,7 +240,7 @@
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
       <AdditionalDependencies>libturboparser.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Projects\TurboParser\vsprojects\x64\Release O0</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Projects\TurboParser_DN\vsprojects\x64\Release O0</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -259,6 +259,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="glogconfig.h" />
+    <ClInclude Include="ps_textanalysistemplate.h" />
     <ClInclude Include="TurboLemmatizer.h" />
     <ClInclude Include="TurboTextAnalysis.h" />
     <ClInclude Include="TurboTokenAnalysis.h" />

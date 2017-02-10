@@ -1,4 +1,4 @@
-from turboparser import Pyinternal_TokenKind, PyCPBSSink, PyCppToPyTurboSink, PyCTurboTextAnalysis, PyLoadOptions, PyAnalyseOptions
+from turboparser import PyCPBSSink, PyCppToPyTurboSink, PyCTurboTextAnalysis, PyLoadOptions, PyAnalyseOptions
 import sys
 import os 
 

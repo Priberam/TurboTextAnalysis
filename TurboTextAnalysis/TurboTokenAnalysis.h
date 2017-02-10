@@ -12,23 +12,11 @@
 //#define E_FAIL -1
 //#endif
 
-enum class internal_TokenKind {
-  unknown = 0,
-  sep_space = (1 << 1),
-  sep_sentence = (1 << 2),
-  sep_paragraph = (1 << 3),
-  sep_quote = (1 << 4),
-  sep_dash = (1 << 5),
-  sep_punct = (1 << 6),
-  number = (1 << 7),
-  alphanum = (1 << 8),
-  alpha = (1 << 9)
-};
+#include "ps_textanalysistemplate.h"
 
-class CTurboToken
-{
+class CTurboToken {
 public:
-  
+
   CTurboToken() {}
   virtual ~CTurboToken() {}
 
@@ -51,14 +39,13 @@ public:
   const std::string &entity_tag() { return m_entity_tag; }
   void set_entity_tag(const std::string &entity_tag) { m_entity_tag = entity_tag; }
 
-  bool HasDigit()
-  {
+  bool HasDigit() {
     const char* word = m_text.c_str();
-    int len = (int) m_text.length();
+    int len = (int)m_text.length();
     for (int i = 0; i < len; ++i)
       if (IsDigit(word[i]))
         return true;
-      return false;
+    return false;
   }
 
 protected:
@@ -76,58 +63,61 @@ protected:
   std::string m_entity_tag;
 };
 
-
 #if 0
 // CPBSAnalysis
 
 class ATL_NO_VTABLE CPBSAnalysis :
   public CComObjectRootEx<CComMultiThreadModel>,
   public CComCoClass<CPBSAnalysis, &CLSID_PBSAnalysis>,
-  public IDispatchImpl<IPBSAnalysis, &IID_IPBSAnalysis, &LIBID_PBSTextAnalysisLib, /*wMajor =*/ 1, /*wMinor =*/ 0>
-{
+  public IDispatchImpl<IPBSAnalysis, &IID_IPBSAnalysis, &LIBID_PBSTextAnalysisLib, /*wMajor =*/ 1, /*wMinor =*/ 0> {
 public:
-  CPBSAnalysis()
-  {
-  }
+  CPBSAnalysis() {}
 
-DECLARE_REGISTRY_RESOURCEID(IDR_PBSANALYSIS)
+  DECLARE_REGISTRY_RESOURCEID(IDR_PBSANALYSIS)
 
-
-BEGIN_COM_MAP(CPBSAnalysis)
-  COM_INTERFACE_ENTRY(IPBSAnalysis)
-  COM_INTERFACE_ENTRY(IDispatch)
-END_COM_MAP()
-
-
+  BEGIN_COM_MAP(CPBSAnalysis)
+    COM_INTERFACE_ENTRY(IPBSAnalysis)
+    COM_INTERFACE_ENTRY(IDispatch)
+  END_COM_MAP()
 
   DECLARE_PROTECT_FINAL_CONSTRUCT()
 
-  HRESULT FinalConstruct()
-  {
+  HRESULT FinalConstruct() {
     return S_OK;
   }
 
-  void FinalRelease()
-  {
-  }
+  void FinalRelease() {}
 #endif
 
-class CPBSSink;
+  class CPBSSink;
 
-class CTurboTokenAnalysis
-{
-public:
+  class CTurboTokenAnalysis {
+  public:
 #if 0
-  void processToken(TRSessionManager *sess, CTRAnalise*an, CTRToken *tk, CPBSSink* pbssink, std::map<short, int> &onts_doc, char * _textChunk, int offset);
-  void processSepToken(TRSessionManager *sess, CTKToken *tk1, CTKToken *tk, CPBSSink* pbssink, char * _textChunk, int offset);
-  void processSepSentenceToken(TRSessionManager *sess, CTKToken *tk1, int cchProc, CPBSSink* pbssink, char * _textChunk, int offset);
+    void processToken(TRSessionManager *sess,
+                      CTRAnalise*an, CTRToken *tk,
+                      CPBSSink* pbssink,
+                      std::map<short, int> &onts_doc,
+                      char * _textChunk,
+                      int offset);
+    void processSepToken(TRSessionManager *sess,
+                         CTKToken *tk1,
+                         CTKToken *tk,
+                         CPBSSink* pbssink,
+                         char * _textChunk,
+                         int offset);
+    void processSepSentenceToken(TRSessionManager *sess,
+                                 CTKToken *tk1,
+                                 int cchProc,
+                                 CPBSSink* pbssink,
+                                 char * _textChunk,
+                                 int offset);
 #endif
 
-  internal_TokenKind GetTokenKind(CTurboToken *token);
-  internal_TokenKind GetSepTokenKind(const char *text, int len);
-};
+    TokenKind GetTokenKind(CTurboToken *token);
+    TokenKind GetSepTokenKind(const char *text, int len);
+  };
 
 #if 0
-OBJECT_ENTRY_AUTO(__uuidof(PBSAnalysis), CPBSAnalysis)
+  OBJECT_ENTRY_AUTO(__uuidof(PBSAnalysis), CPBSAnalysis)
 #endif
-

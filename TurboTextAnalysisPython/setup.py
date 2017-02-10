@@ -5,7 +5,7 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser"
+    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
     TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
     
     ext_modules=[Extension("turboparser",
@@ -34,7 +34,7 @@ if os.name == 'nt':
     os.path.join(TURBO_PARSER_PATH, "deps", "googletest", "src"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysisPython"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "Deps")],
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps")],
     library_dirs=
     [os.path.join(TURBO_TEXT_ANALYSIS_PATH, "x64", "Release"),
     os.path.join(TURBO_PARSER_PATH, "vsprojects", "x64", "Release"),    
@@ -42,7 +42,7 @@ if os.name == 'nt':
     os.path.join(TURBO_PARSER_PATH, "deps", "gflags-2.0", "x64", "Release"),            
     os.path.join(TURBO_PARSER_PATH, "deps", "AD3-2.0.2", "vsprojects", "x64", "Release"),
     os.path.join(TURBO_PARSER_PATH, "deps", "googletest", "msvc", "x64", "Release"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "Deps", "libconfig-1.4.9", "x64", "Release")],     
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "x64", "Release")],     
     extra_objects=
     ["TurboTextAnalysis.lib",
     "libturboparser.lib", 
@@ -56,8 +56,8 @@ if os.name == 'nt':
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )
 else:
-    TURBO_PARSER_PATH = "/home/user/Projects/TurboParser"
-    TURBO_TEXT_ANALYSIS_PATH = "/home/user/Projects/TurboTextAnalysis"
+    TURBO_PARSER_PATH = "/home/dan/temp/TurboParser_DN20160603"
+    TURBO_TEXT_ANALYSIS_PATH = "/home/dan/temp/TurboTextAnalysis"
 
     ext_modules=[Extension("turboparser", 
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
@@ -79,11 +79,11 @@ else:
     os.path.join(TURBO_PARSER_PATH, "deps", "local", "include"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysisPython"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "Deps")],
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps")],
     library_dirs=[os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis/"),
     os.path.join(TURBO_PARSER_PATH, "libturboparser/"), 
     os.path.join(TURBO_PARSER_PATH, "deps", "local", "lib/"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "Deps", "libconfig-1.4.9", "lib", ".libs/")],
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "lib", ".libs/")],
     libraries=["turbotextanalysis",
     "turboparser",
     "gflags", 
