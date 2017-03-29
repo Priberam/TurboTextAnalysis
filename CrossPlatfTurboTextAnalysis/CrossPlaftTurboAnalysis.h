@@ -68,7 +68,7 @@ public:
                                    int passage_offset);
 
   int RetrieveFinalAnswer(const char * language,
-                          const char * answer);
+                          const char ** answer);
 
   int ReturnResults(const char *  language,
                     int max_num_results,

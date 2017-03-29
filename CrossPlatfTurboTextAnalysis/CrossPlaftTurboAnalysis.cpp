@@ -103,7 +103,7 @@ int CrossPlatfTurboAnalysis::SubmitCandidateAnswerPassage(const char * language,
 };
 
 int CrossPlatfTurboAnalysis::RetrieveFinalAnswer(const char * language,
-                                                 const char * answer) {
+                                                 const char ** answer) {
   return -1;
 };
 

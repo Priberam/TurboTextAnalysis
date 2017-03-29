@@ -35,7 +35,11 @@ protected:
 
 class TurboTokenizer {
 public:
+  struct TaskOptions {
+    bool break_token_on_hyphen{ true };
+  };
   TurboTokenizer() {};
+  TurboTokenizer(const TaskOptions & options) : task_options_(options){};
   virtual ~TurboTokenizer() {
     for (int i = 0; i < contractions_.size(); ++i) {
       delete contractions_[i];
@@ -133,6 +137,7 @@ protected:
   bool IsPeriod(char c) { return c == '.'; }
   bool IsExclamationMark(char c) { return c == '!'; }
   bool IsQuestionMark(char c) { return c == '?'; }
+  bool IsHyphen(char c) { return c == '-'; }
 
   bool IsWhitespace(const std::string &word, int position, int *length);
   bool IsApostrophe(const std::string &word, int position, int *length);
@@ -219,7 +224,7 @@ protected:
 
   bool HasHyphen(const char* word, int len) {
     for (int i = 0; i < len; ++i) {
-      if ('-' == word[i]) return true;
+      if (IsHyphen( word[i])) return true;
     }
     return false;
   }
@@ -268,6 +273,8 @@ protected:
 
   Alphabet contraction_suffix_dictionary_;
   std::vector<std::string> canonical_suffixes_;
+
+  TaskOptions task_options_;
 };
 
 #endif /* TURBOTOKENIZER_H_ */

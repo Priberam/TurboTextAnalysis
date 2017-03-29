@@ -62,7 +62,7 @@ public:
                                            int passage_offset) = 0;
 
   virtual int RetrieveFinalAnswer(const char * language,
-                                  const char * answer) = 0;
+                                  const char ** answer) = 0;
 
   virtual int ReturnResults(const char *  language,
                             int max_num_results,

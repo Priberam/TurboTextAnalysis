@@ -783,6 +783,8 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   std::string filepath_semantic_parser_model = "";
   std::string filepath_coreference_resolver_model = "";
 
+  TurboTokenizer::TaskOptions tokenizer_options;
+
   std::string filepath_config = path;
   filepath_config += "config.cfg";
 
@@ -852,6 +854,9 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                                        filepath_semantic_parser_model);
             read_ok &= ReadSettingSafe(language, "filepath_coreference_resolver_model",
                                        filepath_coreference_resolver_model);
+
+            read_ok &= ReadSettingSafe(language, "break_token_on_hyphen",
+                                       tokenizer_options.break_token_on_hyphen);
 
             if (filepath_abbreviations != "")
               filepath_abbreviations = path + filepath_abbreviations;
@@ -1108,7 +1113,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
       << "will not be accepted, as there is now parser model." << std::endl;
   }
 
-  TurboTokenizer *tokenizer = new TurboTokenizer;
+  TurboTokenizer *tokenizer = new TurboTokenizer(tokenizer_options);
   if (filepath_abbreviations != "")
     tokenizer->LoadAbbreviations(filepath_abbreviations);
   if (filepath_contractions != "")
