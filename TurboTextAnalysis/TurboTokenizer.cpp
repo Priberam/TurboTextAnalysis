@@ -9,17 +9,21 @@
 //#define ORIGINAL_PENN_TREEBANK_TOKENIZER
 
 // TODO(atm): handle non-ASCII apostrophe.
-// TODO(atm): handle non-ASCII non-breaking space.
 const std::string kTurboSentenceStartSymbols = "¿¡";
+const std::string kTurboInvertedQuestionMark = { '\xc2', '\xbf' };
+const std::string kTurboInvertedExclamationMark = { '\xc2', '\xa1' };
+
 const std::string kTurboSentenceEndSymbols = ".!?";
 const std::string kTurboAbbreviatonMarkers = ".";
-const std::string kTurboWhitespaces = " \t\r\n\f\v"; // TODO: add non-breaking space.
+const std::string kTurboWhitespaces = " \t\r\n\f\v";
 const std::string kTurboLeftBrackets = "{[(<";
 const std::string kTurboRightBrackets = "}])>";
 
 const char *kTurboPunctuationSymbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
 
-const std::string kTurboNonBreakingSpace = " ";
+const std::string kTurboNonBreakingSpace = { '\xc2', '\xa0' };
+const std::string kTurboZeroWidthSpace = { '\xe2', '\x80', '\x8b' };
+const std::string kTurboZeroWidthNonBreakingSpace = { '\xef', '\xbb', '\xbf' };
 
 const std::string kTurboApostrophe = "’";
 const std::string kTurboManualApostrophe = "'";
@@ -65,7 +69,9 @@ bool TurboTokenizer::IsWhitespace(const std::string &word,
       return true;
     }
   }
-  return IsPattern(word, kTurboNonBreakingSpace, position, length);
+  return IsPattern(word, kTurboNonBreakingSpace, position, length)
+    || IsPattern(word, kTurboZeroWidthSpace, position, length)
+    || IsPattern(word, kTurboZeroWidthNonBreakingSpace, position, length);
 #endif
 }
 
@@ -378,16 +384,16 @@ void TurboTokenizer::SplitSentences(const std::string &text,
     if (ValidateSentenceTerminator(text, start_position, &delim_position)) {
       std::string sentence = text.substr(start_position,
                                          delim_position - start_position);
-      int end_position = delim_position + 1;
+      int end_position = delim_position;
       sentences->push_back(sentence);
       start_positions->push_back(start_position);
       end_positions->push_back(end_position);
 
-      position = delim_position + 1;
+      position = delim_position ;
       EatWhitespaces(text, position, &start_position);
       position = start_position;
     } else {
-      position = delim_position + 1;
+      position = delim_position+1 ;
     }
   }
 
@@ -523,6 +529,39 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
         break;
       }
       // Else handle the other quotations...?
+    }
+  }
+
+
+  for (int position = 0; position < end_position - start_position; ++position) {
+    // Current position in the global buffer.
+    int current_position = start_position + position;
+    int match_length = 1;
+
+    // If it's a oInvertedQuestionMark or a InvertedExclamationMark, it becomes a token.
+    if ((IsPattern(word, kTurboInvertedQuestionMark, position, &match_length)
+         || IsPattern(word, kTurboInvertedExclamationMark, position, &match_length)) &&
+        current_position + match_length < sentence.length()) {
+      std::string token_word = word.substr(position, match_length);
+      AddWordToken(token_word,
+                   current_position,
+                   current_position + match_length,
+                   words,
+                   word_start_positions,
+                   word_end_positions);
+      position += match_length;
+
+      // Now take care of the reminiscent part of the word.
+      LookForSubwords(sentence,
+                      start_position + position,
+                      end_position,
+                      words,
+                      word_start_positions,
+                      word_end_positions);
+
+      end_position = current_position;
+      word = sentence.substr(start_position, end_position - start_position);
+      break;
     }
   }
 
@@ -996,10 +1035,11 @@ bool TurboTokenizer::ValidateSentenceTerminator(const std::string &text,
   GetWordBoundaries(text, *terminator_position, start_position, (int)text.length() - 1,
                     &word_start_position, &word_end_position);
 
-  // There are alphanumeric characters after the termination mark; don't break.
-  if (word_end_position > (*terminator_position) + 1) return false;
-
   if (IsPeriod(text[*terminator_position])) {
+
+    // There are alphanumeric characters after the termination mark; don't break.
+    if (word_end_position > (*terminator_position) + 1) return false;
+
     // If there is a single character before don't break (could be a middle
     // initial).
     if (word_start_position == (*terminator_position) - 1) return false;
@@ -1114,6 +1154,11 @@ void TurboTokenizer::GetWordBoundaries(const std::string &text,
     if (!IsAlphanumeric(buffer[i]) && !IsPeriod(buffer[i])) break;
   }
   *start_position = i + 1;
+
+  if (IsExclamationMark(text[position]) || IsQuestionMark(text[position])) {
+    *end_position = position + 1;
+    return;
+  }
 
   // Get right boundary.
   for (i = position + 1; i <= upper_bound_end; ++i) {
