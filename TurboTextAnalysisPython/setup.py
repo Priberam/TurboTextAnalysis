@@ -56,8 +56,8 @@ if os.name == 'nt':
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )
 else:
-    TURBO_PARSER_PATH = "/home/dan/temp/TurboParser_DN20160603"
-    TURBO_TEXT_ANALYSIS_PATH = "/home/dan/temp/TurboTextAnalysis"
+    TURBO_PARSER_PATH = "/pba/workspace/TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = "/pba/workspace/TurboTextAnalysis"
 
     ext_modules=[Extension("turboparser", 
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
@@ -89,6 +89,7 @@ else:
     "gflags", 
     "glog", 
     "ad3",
-    "config++"])]
+    "config++",
+    "icudata", "icui18n", "icuio", "icutu", "icuuc"])]
     setup(cmdclass={'build_ext': build_ext},
     ext_modules = ext_modules, gdb_debug=True)

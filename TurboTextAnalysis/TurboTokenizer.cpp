@@ -368,8 +368,6 @@ void TurboTokenizer::LoadContractionSuffixes(const std::string filepath) {
 }
 
 void TurboTokenizer::SplitSentences(const std::string &text,
-                                    bool split_on_new_lines,
-                                    bool split_on_empty_lines,
                                     std::vector<std::string>* sentences,
                                     std::vector<int>* start_positions,
                                     std::vector<int>* end_positions) {

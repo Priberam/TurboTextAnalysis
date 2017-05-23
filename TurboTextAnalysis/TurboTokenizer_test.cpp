@@ -19,7 +19,10 @@ int main(int argc, char **argv) {
       std::vector<int> end_positions;
       const std::string sentence = line;
       //std::cerr << "Tokenizing " << sentence << std::endl;
-      tokenizer.TokenizeWords(sentence, &words, &start_positions, &end_positions);
+      tokenizer.TokenizeWords(sentence, 
+                              &words, 
+                              &start_positions, 
+                              &end_positions);
 
       for (int i = 0; i < words.size(); ++i) {
         std::cout << words[i] + " ";
@@ -35,14 +38,18 @@ int main(int argc, char **argv) {
         std::vector<std::string> sentences;
         std::vector<int> start_positions;
         std::vector<int> end_positions;
-        tokenizer.SplitSentences(document, false, false, &sentences,
-                                 &start_positions, &end_positions);
+        tokenizer.SplitSentences(document,  
+                                 &sentences,
+                                 &start_positions, 
+                                 &end_positions);
         for (int i = 0; i < sentences.size(); ++i) {
           std::vector<std::string> words;
           std::vector<int> word_start_positions;
           std::vector<int> word_end_positions;
           const std::string sentence = sentences[i];
-          tokenizer.TokenizeWords(sentence, &words, &word_start_positions,
+          tokenizer.TokenizeWords(sentence, 
+                                  &words,
+                                  &word_start_positions,
                                   &word_end_positions);
 
           for (int j = 0; j < words.size(); ++j) {

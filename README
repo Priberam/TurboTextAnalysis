@@ -1,25 +1,35 @@
 README
 
+
 TurboTextAnalysis project folder analysis
   TurboTextAnalysis\Data
-    Models for TurboParser.
+    Models for TurboParser in english and spanish.
       
-  TurboTextAnalysis\Deps  
-    External files/projects that are required.
+  TurboTextAnalysis\deps  
+    External files/projects that are required. A version of config++ is hereby made available.
 
   TurboTextAnalysis\TurboTextAnalysis  
     Library that exposes the complete NLP pipeline exclusively in C++ 
     on top of TurboParser (namely, the libturboparser library)
     (replaces python code in "python" folder of TurboParser project folder).
     
-  TurboTextAnalysis\TurboTextAnalysisTest  
+  TurboTextAnalysis\DemoTextAnalysisTest  
     Example code that uses the TurboTextAnalysis library.
 
   TurboTextAnalysis\TurboTextAnalysisPython
-    python wrapper over the TurboTextAnalysis, made with Cython.
-        
+    Python wrapper over the TurboTextAnalysis, made with Cython.
+
+  TurboTextAnalysis\CrossPlatfTurboTextAnalysis
+    Cross-platform run-time dynamic linking library for TurboTextAnalysis.
+    (Reference: https://github.com/davidalbertonogueira/CrossPlatfDynamicLibraryPlugInArchitecture)
+
+  TurboTextAnalysis\TestCrossPlatfTurboTextAnalysis
+    Example code that uses the TurboTextAnalysis run-time dynamic linking library.
+    
 NOTE:    
-Python 3.X is required. Cython is required.
+Python 3.X is required. 
+Cython is required (sudo apt-get install cython3).
+ICU library is required (sudo apt-get install libicu-dev icu-devtools).
 
 
 Build process
@@ -56,7 +66,7 @@ Build process
   To Build TurboTextAnalysis
     1. Clone or download TurboParser from master branch 
         of https://github.com/Priberam/TurboTextAnalysis
-    2. In Deps/, unzip libconfig-1.4.9 from libconfig-1.4.9.zip. 
+    1.1. In deps/, unzip libconfig-1.4.9 from libconfig-1.4.9.zip and compile it.
     2. If OS is Linux
          2.1. Go to the TurboTextAnalysis folder in the TurboTextAnalysis 
               project folder, where you will find a Makefile.

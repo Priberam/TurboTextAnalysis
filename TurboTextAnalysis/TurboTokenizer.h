@@ -12,6 +12,7 @@
 #include <vector>
 #include <algorithm>
 #include "Alphabet.h"
+#include "Tokenizer.h"
 
 class TurboTokenContraction {
 public:
@@ -33,7 +34,7 @@ protected:
   std::vector<int> end_positions_;
 };
 
-class TurboTokenizer {
+class TurboTokenizer : public Tokenizer {
 public:
   struct TaskOptions {
     bool break_token_on_hyphen{ true };
@@ -51,8 +52,6 @@ public:
   void LoadContractionSuffixes(const std::string filepath);
 
   void SplitSentences(const std::string &text,
-                      bool split_on_new_lines,
-                      bool split_on_empty_lines,
                       std::vector<std::string>* sentences,
                       std::vector<int>* start_positions,
                       std::vector<int>* end_positions);

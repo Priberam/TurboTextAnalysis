@@ -4,49 +4,59 @@ CC = g++
 DEBUG = -g
 PROJNAME = turbotextanalysis
 
+HEADERPATH = .
+SOURCEPATH = .
+LOCALINCLUDES =  ..
+
 LIBTURBOTEXTANALYSIS = ../TurboTextAnalysis
-LIBTURBOPARSER = /home/dan/temp/TurboParser_DN20160603/libturboparser
-UTIL = /home/dan/temp/TurboParser_DN20160603/src/util
-CLASSIFIER = /home/dan/temp/TurboParser_DN20160603/src/classifier
-SEQUENCE = /home/dan/temp/TurboParser_DN20160603/src/sequence
-TAGGER = /home/dan/temp/TurboParser_DN20160603/src/tagger
-ENTITYRECOGNIZER = /home/dan/temp/TurboParser_DN20160603/src/entity_recognizer
-PARSER = /home/dan/temp/TurboParser_DN20160603/src/parser
-SEMANTICPARSER = /home/dan/temp/TurboParser_DN20160603/src/semantic_parser
-COREFERENCERESOLVER = /home/dan/temp/TurboParser_DN20160603/src/coreference_resolver
-MORPHOLOGICALTAGGER = /home/dan/temp/TurboParser_DN20160603/src/morphological_tagger
+LIBTURBOPARSER = /pba/workspace/TurboParser/libturboparser
+UTIL = /pba/workspace/TurboParser/src/util
+CLASSIFIER = /pba/workspace/TurboParser/src/classifier
+SEQUENCE = /pba/workspace/TurboParser/src/sequence
+TAGGER = /pba/workspace/TurboParser/src/tagger
+ENTITYRECOGNIZER = /pba/workspace/TurboParser/src/entity_recognizer
+PARSER = /pba/workspace/TurboParser/src/parser
+SEMANTICPARSER = /pba/workspace/TurboParser/src/semantic_parser
+COREFERENCERESOLVER = /pba/workspace/TurboParser/src/coreference_resolver
+MORPHOLOGICALTAGGER = /pba/workspace/TurboParser/src/morphological_tagger
 
+AUXLIBS = /pba/workspace/TurboParser/deps/local/lib
+AUXINCLUDES = /pba/workspace/TurboParser/deps/local/include
+LOCALDEPSINCLUDES = /pba/workspace/TurboTextAnalysis/deps
+#LIBCONFIGINCLUDES = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib
+#LIBCONFIG = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib/.libs
+#UCIINCLUDES = /pba/lib_deps/icu/include
+#UCI = /pba/lib_deps/icu/lib
 
-AUXLIBS = /home/dan/temp/TurboParser_DN20160603/deps/local/lib
-AUXINCLUDES = /home/dan/temp/TurboParser_DN20160603/deps/local/include
-LOCALDEPSINCLUDES = /home/dan/temp/TurboTextAnalysis/deps
-LIBCONFIGINCLUDES = /home/dan/temp/TurboTextAnalysis/deps/libconfig-1.4.9/lib
-LIBCONFIG = /home/dan/temp/TurboTextAnalysis/deps/libconfig-1.4.9/lib/.libs
-
-INCLUDES = -I$(UTIL) -I$(CLASSIFIER) -I$(SEQUENCE) -I$(TAGGER) -I$(ENTITYRECOGNIZER) -I$(PARSER) -I$(SEMANTICPARSER) -I$(COREFERENCERESOLVER)  -I$(MORPHOLOGICALTAGGER) -I$(LIBTURBOPARSER) -I$(LIBTURBOTEXTANALYSIS) -I$(AUXINCLUDES) -I$(LOCALDEPSINCLUDES) -I$(LIBCONFIGINCLUDES)
-LIBS = -L$(AUXLIBS) -L$(LIBTURBOPARSER) -L$(LIBTURBOTEXTANALYSIS) -L$(LIBCONFIG)
+INCLUDES = -L$(LIBTURBOTEXTANALYSIS) -I$(UTIL) -I$(CLASSIFIER) -I$(SEQUENCE) -I$(TAGGER) -I$(ENTITYRECOGNIZER) -I$(PARSER) -I$(SEMANTICPARSER) -I$(COREFERENCERESOLVER)  -I$(MORPHOLOGICALTAGGER) -I$(LIBTURBOPARSER) -I$(AUXINCLUDES) -I$(LOCALDEPSINCLUDES) -I$(LOCALINCLUDES) -I$(LIBCONFIGINCLUDES) -I$(UCIINCLUDES)
+LIBS = -L$(AUXLIBS) -L$(LIBTURBOTEXTANALYSIS) -L$(LIBTURBOPARSER) -L$(LIBCONFIG)
+#LIBS += -L$(UCI)
 #LIBS += -L/usr/local/lib/
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
+LFLAGS += -Wl,--whole-archive $(LIBTURBOTEXTANALYSIS)/libturbotextanalysis.a -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog
-LFLAGS += $(LIBCONFIG)/libconfig++.so.9.1.3
-LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive
-LFLAGS += -Wl,--whole-archive $(LIBTURBOTEXTANALYSIS)/libturbotextanalysis.a -Wl,--no-whole-archive
-
-HDRS = $(wildcard *.h)
-HDRS += $(shell find $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(LIBTURBOTEXTANALYSIS) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LIBCONFIGINCLUDES) -name '*.h')
-HDRS += $(shell find $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(LIBTURBOTEXTANALYSIS) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LIBCONFIGINCLUDES) -name '*.h++')
-SRCS = $(wildcard *.cpp)
-OBJS = $(SRCS:.cpp=.o)
-TXTS = $(wildcard *.txt)
-SCRIPTS = $(wildcard *.sh)
+LFLAGS += -lconfig++
+#LFLAGS += $(LIBCONFIG)/libconfig++.so.9.1.3
+LFLAGS += -licudata -licui18n -licuio -licutu -licuuc
+#LFLAGS += $(UCI)/libicudata.so $(UCI)/libicui18n.so  $(UCI)/libicuio.so  $(UCI)/libicutu.so  $(UCI)/libicuuc.so
 
 #For verbosity
 LFLAGS += -v
 CFLAGS += $(DEBUG)
+
+HDRS = $(wildcard *.h)
+HDRS += $(shell find $(HEADERPATH) $(LIBTURBOTEXTANALYSIS) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER)  $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) $(LIBCONFIGINCLUDES) $(UCIINCLUDES) -name '*.h')
+HDRS += $(shell find $(HEADERPATH) $(LIBTURBOTEXTANALYSIS) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER)  $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) $(LIBCONFIGINCLUDES) $(UCIINCLUDES) -name '*.h++')
+SRCS  = $(shell find $(SOURCEPATH) -name '*.cpp')
+OBJS = $(SRCS:.cpp=.o)
+TXTS = $(wildcard *.txt)
+SCRIPTS = $(wildcard *.sh)
+
 
 all : $(PROJNAME).a $(PROJNAME).so
 
@@ -61,7 +71,7 @@ $(PROJNAME).so : $(OBJS)
 %.o: %.cpp $(HDRS)
 	$(CC) -c $(CFLAGS) $(LFLAGS) -o $@ $<
 
-    
+	
 clean:
 	@echo Clean
 	rm -f *~ *.o *~

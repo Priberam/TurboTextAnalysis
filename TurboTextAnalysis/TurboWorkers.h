@@ -8,7 +8,7 @@
 #ifndef TURBOWORKERS_H_
 #define TURBOWORKERS_H_
 
-#include "TurboTokenizer.h"
+#include "Tokenizer.h"
 #include "TurboLemmatizer.h"
 #include <string>
 #include <map>
@@ -17,7 +17,8 @@
 class CTurboWorkers {
 public:
   CTurboWorkers(
-    TurboTokenizer *tokenizer,
+    Tokenizer *tokenizer,
+    bool tokenizer_outputs_unicode_glyph_aware_offsets,
     TurboLemmatizer *lemmatizer,
     TurboParserInterface::TurboTaggerWorker *tagger,
     TurboParserInterface::TurboMorphologicalTaggerWorker *morphological_tagger,
@@ -26,6 +27,8 @@ public:
     TurboParserInterface::TurboSemanticParserWorker *semantic_parser,
     TurboParserInterface::TurboCoreferenceResolverWorker * coreference_resolver) {
     m_tokenizer = tokenizer;
+    m_tokenizer_outputs_unicode_glyph_aware_offsets = 
+      tokenizer_outputs_unicode_glyph_aware_offsets;
     m_lemmatizer = lemmatizer;
     m_tagger = tagger;
     m_morphological_tagger = morphological_tagger;
@@ -36,8 +39,11 @@ public:
   }
   virtual ~CTurboWorkers() {}
 
-  TurboTokenizer *GetTokenizer() {
+  Tokenizer *GetTokenizer() {
     return m_tokenizer;
+  }
+  bool tokenizer_outputs_unicode_glyph_aware_offsets() {
+    return m_tokenizer_outputs_unicode_glyph_aware_offsets;
   }
   TurboLemmatizer *GetLemmatizer() {
     return m_lemmatizer;
@@ -62,7 +68,8 @@ public:
   }
 
 protected:
-  TurboTokenizer *m_tokenizer;
+  Tokenizer *m_tokenizer;
+  bool m_tokenizer_outputs_unicode_glyph_aware_offsets;
   TurboLemmatizer *m_lemmatizer;
   TurboParserInterface::TurboTaggerWorker *m_tagger;
   TurboParserInterface::TurboMorphologicalTaggerWorker *m_morphological_tagger;
@@ -88,7 +95,8 @@ public:
 
 public:
   void AddLanguageWorkers(const std::string &language,
-                          TurboTokenizer *tokenizer,
+                          Tokenizer *tokenizer,
+                          bool tokenizer_outputs_unicode_glyph_aware_offsets,
                           TurboLemmatizer *lemmatizer,
                           TurboParserInterface::TurboTaggerWorker *tagger,
                           TurboParserInterface::TurboMorphologicalTaggerWorker *morphological_tagger,
@@ -99,6 +107,7 @@ public:
     insert(std::pair<std::string, CTurboWorkers*>
       (language,
        new CTurboWorkers(tokenizer,
+                         tokenizer_outputs_unicode_glyph_aware_offsets,
                          lemmatizer,
                          tagger,
                          morphological_tagger,

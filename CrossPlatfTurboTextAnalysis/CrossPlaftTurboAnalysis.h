@@ -1,7 +1,7 @@
 #ifndef CROSSPLATFTURBOTEXTANALYSIS_TURBOANALYSIS_H
 #define CROSSPLATFTURBOTEXTANALYSIS_TURBOANALYSIS_H
-#include "TurboTextAnalysis\ps_textanalysistemplate.h"
-#include "TurboTextAnalysis\TurboTextAnalysis.h"
+#include "TurboTextAnalysis/ps_textanalysistemplate.h"
+#include "TurboTextAnalysis/TurboTextAnalysis.h"
 #include <string>
 #include <unordered_map>
 

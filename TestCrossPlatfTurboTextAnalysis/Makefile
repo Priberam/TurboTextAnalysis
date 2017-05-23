@@ -9,8 +9,8 @@ EXEC = targetapplication
 
 HEADERPATH = .
 SOURCEPATH = .
-
 LOCALDEPSINCLUDES = ..
+
 AUXINCLUDES = 
 AUXLIBS = 
 

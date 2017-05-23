@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
 #if defined(_MSC_VER)
                                    "C:\\Projects\\TurboTextAnalysis\\Data\\"
 #else
-                                   "/mnt/c/Projects/TurboTextAnalysis/Data/"
+                                   "/pba/workspace/TurboTextAnalysis/Data/"
 #endif
     ) != 0) {
       std::cerr << "Error in LoadLanguage" << std::endl; return -1;

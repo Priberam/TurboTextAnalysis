@@ -98,6 +98,25 @@ void DocumentSink::PrintContent() {
     }
   }
 }
+
+bool string_from_file(const char *file_name,
+                             std::string *out) {
+  out->clear();
+  std::ifstream fsol(file_name, std::ios::binary);
+  if (!fsol.good())
+    return false;
+
+  fsol.seekg(0, std::ios::end);
+  out->reserve(fsol.tellg());
+  fsol.seekg(0, std::ios::beg);
+  out->assign(
+    std::istreambuf_iterator<char>(fsol),
+    std::istreambuf_iterator<char>());
+
+  fsol.close();
+  return true;
+}
+
 int main() {
   CTurboTextAnalysis *text_analyser = new CTurboTextAnalysis;
 
