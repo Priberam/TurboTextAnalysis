@@ -40,7 +40,7 @@ public:
     bool break_token_on_hyphen{ true };
   };
   TurboTokenizer() {};
-  TurboTokenizer(const TaskOptions & options) : task_options_(options){};
+  TurboTokenizer(const TaskOptions & options) : task_options_(options) {};
   virtual ~TurboTokenizer() {
     for (int i = 0; i < contractions_.size(); ++i) {
       delete contractions_[i];
@@ -86,6 +86,11 @@ protected:
                                          int start_position,
                                          int *end_position);
 
+  // Eat non-whitespaces starting from text[mid_position] backwards and puts the
+  // position of the first whitespace in start_position.
+  void GetPreviousWhitespace(const std::string &text,
+                             int *start_position, int mid_position);
+
   // Eat non-whitespaces starting from text[start_position] and puts the
   // position of the first whitespace in end_position.
   void GetNextWhitespace(const std::string &text,
@@ -96,7 +101,18 @@ protected:
   // position (for example, if there are closing brackets or quotes after
   // a punctuation sign.
   bool ValidateSentenceTerminator(const std::string &text,
-                                  int start_position, int *terminator_position);
+                                  int start_position, 
+                                  int *terminator_position);
+
+  // Returns true if there is, for each opening bracket/quotation mark, 
+  // a valid closing bracket/quotation mark.
+  bool ValidateTextBracketsQuotationsCoherence(const std::string & text);
+    
+    // Returns true if there is a valid closing bracket/quotation mark within 
+  // the desired window for the opening bracket/quotation mark at start_position.
+  bool ValidateBracketsQuotationsClosureLookAhead(const std::string & text,
+                                                  int start_position,
+                                                  int max_lookahead_window = 500);
 
   // Get alphanumeric word boundaries.
   void GetWordBoundaries(const std::string &text, int position,
@@ -127,9 +143,24 @@ protected:
     return false;
   }
 
-  bool IsWhitespace(char c);
-  bool IsLeftBracket(char c);
-  bool IsRightBracket(char c);
+  size_t FindFirstOf(const std::string& input_text,
+                     std::vector<std::string> delims,
+                     int position,
+                     int * length);
+
+  bool IsSentenceStartSymbol(const std::string &word,
+                             int position,
+                             int *length);
+  bool IsSentenceEndSymbol(const std::string &word,
+                           int position,
+                           int *length);
+  bool IsLeftBracket(const std::string &word,
+                     int position,
+                     int *length);
+  bool IsRightBracket(const std::string &word,
+                      int position,
+                      int *length);
+
   bool IsColon(char c) { return c == ':'; }
   bool IsSemiColon(char c) { return c == ';'; }
   bool IsComma(char c) { return c == ','; }
@@ -138,10 +169,26 @@ protected:
   bool IsQuestionMark(char c) { return c == '?'; }
   bool IsHyphen(char c) { return c == '-'; }
 
+  std::string GetBracketsQuotationsClosingSymbol(const std::string & input,
+                               bool *matched = nullptr);
+
+  bool IsParagrapgh(const std::string &word, int position, int *length);
   bool IsWhitespace(const std::string &word, int position, int *length);
   bool IsApostrophe(const std::string &word, int position, int *length);
+  bool IsLRSingleQuotationMark(const std::string &word, int position,
+                               int *length);
+  bool IsLeftSingleQuotationMark(const std::string &word, int position,
+                                 int *length);
+  bool IsRightSingleQuotationMark(const std::string &word, int position,
+                                  int *length);
   bool IsSingleQuotationMark(const std::string &word, int position,
                              int *length);
+  bool IsLRDoubleQuotationMark(const std::string &word, int position,
+                               int *length);
+  bool IsLeftDoubleQuotationMark(const std::string &word, int position,
+                                 int *length);
+  bool IsRightDoubleQuotationMark(const std::string &word, int position,
+                                  int *length);
   bool IsDoubleQuotationMark(const std::string &word, int position,
                              int *length);
   bool IsQuotationMark(const std::string &word, int position, int *length);
@@ -156,7 +203,9 @@ protected:
   bool IsDigit(char c) { return (c >= '0' && c <= '9'); }
   // Note: underscore is considered alphanumeric (also in Python regexps).
   bool IsAlphanumeric(char c) { return IsLetter(c) || IsDigit(c) || c == '_'; }
-  bool IsPunctuation(char c);
+  bool IsPunctuation(const std::string & text,
+                     int position,
+                     int *length);
   bool AllUpperCase(const char* word, int len) {
     for (int i = 0; i < len; ++i) {
       if (!IsUpperCase(word[i])) return false;
@@ -198,10 +247,11 @@ protected:
     return false;
   }
 
-  bool HasInternalPunctuation(const char* word, int len) {
+  bool HasInternalPunctuation(const char* word, int len,
+                              int *matched_length) {
     if (len <= 0) return false;
     for (int i = 0; i < len - 1; ++i) {
-      if (IsPunctuation(word[i])) return true;
+      if (IsPunctuation(word, i, matched_length)) return true;
     }
     return false;
   }
@@ -223,7 +273,7 @@ protected:
 
   bool HasHyphen(const char* word, int len) {
     for (int i = 0; i < len; ++i) {
-      if (IsHyphen( word[i])) return true;
+      if (IsHyphen(word[i])) return true;
     }
     return false;
   }
@@ -235,13 +285,14 @@ protected:
     return true;
   }
 
-  bool AllDigitsWithPunctuation(const char* word, int len) {
+  bool AllDigitsWithPunctuation(const char* word, int len,
+                                int *matched_length) {
     bool has_digits = false;
     bool has_punctuation = false;
     for (int i = 0; i < len; ++i) {
       if (IsDigit(word[i])) {
         has_digits = true;
-      } else if (IsPunctuation(word[i])) {
+      } else if (IsPunctuation(word, i, matched_length)) {
         has_punctuation = true;
       } else {
         return false;

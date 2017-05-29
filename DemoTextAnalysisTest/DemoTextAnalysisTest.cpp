@@ -28,7 +28,7 @@ public:
   int PutDocumentFeature(const char * feature,
                          const char * value);
 
-  void PrintContent();
+  void PrintContent(std::ostream & out);
 protected:
   std::string last_word = "default_word";
   int current_index = 0;
@@ -81,18 +81,18 @@ int DocumentSink::PutDocumentFeature(const char * feature,
   return 0;
 }
 
-void DocumentSink::PrintContent() {
+void DocumentSink::PrintContent(std::ostream & out) {
   for (const auto & elem : token_data) {
-    std::cout << "Token id: " << elem.token_id << std::endl;
-    std::cout << "  Token text: " << elem.token_text << std::endl;
-    std::cout << "  Token len: " << elem.token_len << std::endl;
-    std::cout
+    out << "Token id: " << elem.token_id << std::endl;
+    out << "  Token text: " << elem.token_text << std::endl;
+    out << "  Token len: " << elem.token_len << std::endl;
+    out
       << "  Token start pos: " << elem.token_start_pos << std::endl;
 
     for (const auto & feature_pair : elem.token_features) {
-      std::cout
+      out
         << "  Features:" << elem.token_id << std::endl;
-      std::cout
+      out
         << "    " << feature_pair.first
         << " : " << feature_pair.second << std::endl;
     }
@@ -100,7 +100,7 @@ void DocumentSink::PrintContent() {
 }
 
 bool string_from_file(const char *file_name,
-                             std::string *out) {
+                      std::string *out) {
   out->clear();
   std::ifstream fsol(file_name, std::ios::binary);
   if (!fsol.good())
@@ -153,7 +153,9 @@ int main() {
   if (retval != 0)
     std::cerr << "Error in CTurboTextAnalysis Analyse" << std::endl;
 
-  //doc_sink.PrintContent();
+  std::ofstream doc_sink_dump("doc_sink.dump");
+  doc_sink.PrintContent(doc_sink_dump);
+  doc_sink_dump.close();
 
   std::vector<std::vector<std::string>> sentences_words = { { "Obama", "visits", "Portugal", "." },
   { "He", "is", "staying", "3", "days","." } };

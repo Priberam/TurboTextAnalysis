@@ -144,4 +144,65 @@ private:
     m_utf8str_utf16wstr;
 };
 
+/**
+* @brief Count the number of utf8 glyphs in string.
+*        Assumes the input string is in utf8.
+* @param[in] str Input utf8 text.
+* @returns Number of utf8 glyphs.
+*/
+inline size_t CountUtf8Glyphs(const std::string &str) {
+  size_t j = 0;
+  for (const auto &c : str)
+    if ((c & 0xc0) != 0x80) j++;
+  return j;
+}
+
+/**
+* @brief Get the offset of the next utf8 glyph in string.
+*        Assumes the input string is in utf8.
+* @param[in] str Input utf8 text.
+* @param[in] current_pos Current offset in the string.
+* @returns Offset of the next utf8 glyph.
+*/
+
+inline size_t GetNextUft8GlyphOffset(const std::string &str,
+                              size_t current_pos,
+                              int * offset = nullptr) {
+  int j = 0;
+  bool found = false;
+  for (const auto &c : str.substr(current_pos)) {
+    if ((c & 0xc0) != 0x80) {
+      found = true;
+      break;
+    }
+    j++;
+  }
+  if (offset)*offset = j;
+  return (found) ? current_pos + j : std::string::npos;
+}
+
+/**
+* @brief Get the offset of the next utf8 glyph in string.
+*        Assumes the input string is in utf8.
+* @param[in] str Input utf8 text.
+* @param[in] current_pos Current offset in the string.
+* @returns Offset of the next utf8 glyph.
+*/
+
+inline size_t GetPreviousUft8GlyphOffset(const std::string &str,
+                                  size_t current_pos,
+                                  int * offset = nullptr) {
+  int j = 0;
+  bool found = false;
+  for (int i = current_pos; i >= 0; i--) {
+    char c = str[i];
+    if ((c & 0xc0) != 0x80) {
+      found = true;
+      break;
+    }
+    j++;
+  }
+  if (offset)*offset = -j;
+  return (found) ? current_pos - j : std::string::npos;
+}
 #endif

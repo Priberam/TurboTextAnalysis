@@ -1,29 +1,41 @@
 #include "TurboTokenizer.h"
 #include "StringUtils.h"
 #include "glog/logging.h"
+#include "encoding.h"
 #include <fstream>
 #include <algorithm>
 #include <iostream>
 #include <sstream>
+#include <stack> 
 
 //#define ORIGINAL_PENN_TREEBANK_TOKENIZER
 
 // TODO(atm): handle non-ASCII apostrophe.
-const std::string kTurboSentenceStartSymbols = "¿¡";
 const std::string kTurboInvertedQuestionMark = { '\xc2', '\xbf' };
 const std::string kTurboInvertedExclamationMark = { '\xc2', '\xa1' };
-
-const std::string kTurboSentenceEndSymbols = ".!?";
+const std::vector<std::string> kTurboSentenceStartSymbols =
+{ kTurboInvertedQuestionMark,
+kTurboInvertedExclamationMark };
+const std::vector<std::string> kTurboSentenceEndSymbols = { ".",
+"!",
+"?" };
 const std::string kTurboAbbreviatonMarkers = ".";
-const std::string kTurboWhitespaces = " \t\r\n\f\v";
-const std::string kTurboLeftBrackets = "{[(<";
-const std::string kTurboRightBrackets = "}])>";
-
-const char *kTurboPunctuationSymbols = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-
-const std::string kTurboNonBreakingSpace = { '\xc2', '\xa0' };
-const std::string kTurboZeroWidthSpace = { '\xe2', '\x80', '\x8b' };
-const std::string kTurboZeroWidthNonBreakingSpace = { '\xef', '\xbb', '\xbf' };
+const std::vector<std::string> kTurboWhitespaces = { " ",
+"\t",
+"\r",
+"\n",
+"\f",
+"\v",
+{ '\xc2', '\xa0' },         //kTurboNonBreakingSpace          
+{ '\xe2', '\x80', '\x8b' }, //kTurboZeroWidthSpace            
+{ '\xef', '\xbb', '\xbf' }  //kTurboZeroWidthNonBreakingSpace 
+};
+const std::vector<std::string> kTurboLeftBrackets = { "{",
+"[",
+"(" };
+const std::vector<std::string> kTurboRightBrackets = { "}",
+"]",
+")" };
 
 const std::string kTurboApostrophe = "’";
 const std::string kTurboManualApostrophe = "'";
@@ -50,29 +62,97 @@ const std::string kTurboEnDashSymbol = "–";
 const std::string kTurboManualEmDash = "---";
 const std::string kTurboEmDashSymbol = "—";
 
+const std::vector<std::string> kTurboPunctuationSymbols = {
+  "!",
+  "\"",
+  "#",
+  "$",
+  "%",
+  "&",
+  "'",
+  "(",
+  ")",
+  "*",
+  "+",
+  ",",
+  "-",
+  ".",
+  "/",
+  ":",
+  ";",
+  "<",
+  "=",
+  ">",
+  "?",
+  "@",
+  "[",
+  "\\",
+  "]",
+  "^",
+  "_",
+  "`",
+  "{",
+  "|",
+  "}",
+  "~",
+  kTurboInvertedQuestionMark ,
+  kTurboInvertedExclamationMark,
+  kTurboLeftFrenchQuotationMark,
+  kTurboRightFrenchQuotationMark ,
+  kTurboLeftDoubleQuotationMark,
+  kTurboRightDoubleQuotationMark ,
+  kTurboLeftSingleQuotationMark,
+  kTurboRightSingleQuotationMark,
+  kTurboTwoLeftSingleQuotationMarks,
+  kTurboTwoRightSingleQuotationMarks,
+  kTurboSingleQuotationMark ,
+  kTurboDoubleQuotationMark ,
+  kTurboManualDoubleQuotationMark,
+  kTurboManualLeftDoubleQuotationMark,
+  kTurboManualLeftSingleQuotationMark,
+  "\n"
+};
+
+std::string TurboTokenizer::
+GetBracketsQuotationsClosingSymbol(const std::string & input,
+                                   bool *matched) {
+  static const std::unordered_map<std::string, std::string> mapping{
+    { "{","}"},
+    { "[","]" },
+    { "(",")" },
+    { kTurboLeftFrenchQuotationMark,kTurboRightFrenchQuotationMark },
+    { kTurboLeftDoubleQuotationMark,kTurboRightDoubleQuotationMark },
+    { kTurboLeftSingleQuotationMark,kTurboRightSingleQuotationMark },
+    { kTurboTwoLeftSingleQuotationMarks,kTurboTwoRightSingleQuotationMarks },
+    { kTurboManualLeftDoubleQuotationMark,kTurboDoubleQuotationMark },
+    { kTurboManualLeftSingleQuotationMark,kTurboSingleQuotationMark },
+    { kTurboSingleQuotationMark, kTurboSingleQuotationMark },
+    { kTurboDoubleQuotationMark, kTurboDoubleQuotationMark },
+    { kTurboManualDoubleQuotationMark, kTurboManualDoubleQuotationMark }
+  };
+  const auto iter = mapping.find(input);
+  if (iter != mapping.end()) {
+    if (matched)*matched = true;
+    return iter->second;
+  } else {
+    if (matched)*matched = false;
+    return input;
+  }
+}
+
+bool TurboTokenizer::IsParagrapgh(const std::string &word, int position, int *length) {
+  return (word[position] == '\n');
+}
+
 bool TurboTokenizer::IsWhitespace(const std::string &word,
                                   int position,
                                   int *length) {
-#ifdef ORIGINAL_PENN_TREEBANK_TOKENIZER
   if (position >= word.length()) return false;
-  for (int i = 0; i < kTurboWhitespaces.size(); ++i) {
-    if (word[position] == kTurboWhitespaces[i]) {
-      *length = 1;
-      return true;
-    }
+
+  for (const auto & elem : kTurboWhitespaces) {
+    if (IsPattern(word, elem, position, length))return true;
   }
-#else
-  if (position >= word.length()) return false;
-  for (int i = 0; i < kTurboWhitespaces.size(); ++i) {
-    if (word[position] == kTurboWhitespaces[i]) {
-      *length = 1;
-      return true;
-    }
-  }
-  return IsPattern(word, kTurboNonBreakingSpace, position, length)
-    || IsPattern(word, kTurboZeroWidthSpace, position, length)
-    || IsPattern(word, kTurboZeroWidthNonBreakingSpace, position, length);
-#endif
+  return false;
 }
 
 bool TurboTokenizer::IsApostrophe(const std::string &word,
@@ -83,6 +163,42 @@ bool TurboTokenizer::IsApostrophe(const std::string &word,
 #else
   return (IsPattern(word, kTurboApostrophe, position, length) ||
           IsPattern(word, kTurboManualApostrophe, position, length));
+#endif
+}
+
+bool TurboTokenizer::IsLRSingleQuotationMark(const std::string &word,
+                                             int position,
+                                             int *length) {
+  bool matched = IsPattern(word, kTurboSingleQuotationMark, position, length);
+  if (position >= 1) {
+    size_t previous_glyph_pos =
+      GetPreviousUft8GlyphOffset(word, position - 1);
+    int whitespacesize = 0;
+    return (IsWhitespace(word, previous_glyph_pos, &whitespacesize) ? matched : false);
+  } else {
+    return matched;
+  };
+}
+
+bool TurboTokenizer::IsLeftSingleQuotationMark(const std::string &word,
+                                               int position,
+                                               int *length) {
+#ifdef ORIGINAL_PENN_TREEBANK_TOKENIZER
+  return false;
+#else
+  return (IsPattern(word, kTurboLeftSingleQuotationMark, position, length) ||
+          IsPattern(word, kTurboManualLeftSingleQuotationMark, position,
+                    length));
+#endif
+}
+
+bool TurboTokenizer::IsRightSingleQuotationMark(const std::string &word,
+                                                int position,
+                                                int *length) {
+#ifdef ORIGINAL_PENN_TREEBANK_TOKENIZER
+  return false;
+#else
+  return IsPattern(word, kTurboRightSingleQuotationMark, position, length);
 #endif
 }
 
@@ -97,6 +213,43 @@ bool TurboTokenizer::IsSingleQuotationMark(const std::string &word,
           IsPattern(word, kTurboManualLeftSingleQuotationMark, position,
                     length) ||
           IsPattern(word, kTurboRightSingleQuotationMark, position, length));
+#endif
+}
+
+bool TurboTokenizer::IsLRDoubleQuotationMark(const std::string &word,
+                                             int position,
+                                             int *length) {
+  return (IsPattern(word, kTurboDoubleQuotationMark, position, length) ||
+          IsPattern(word, kTurboManualDoubleQuotationMark, position, length));
+}
+
+bool TurboTokenizer::IsLeftDoubleQuotationMark(const std::string &word,
+                                               int position,
+                                               int *length) {
+#ifdef ORIGINAL_PENN_TREEBANK_TOKENIZER
+  return IsPattern(word, kTurboManualLeftDoubleQuotationMark, position,
+                   length);
+#else
+  return (IsPattern(word, kTurboLeftDoubleQuotationMark, position, length) ||
+          IsPattern(word, kTurboTwoLeftSingleQuotationMarks, position,
+                    length) ||
+          IsPattern(word, kTurboLeftFrenchQuotationMark, position,
+                    length) ||
+          IsPattern(word, kTurboManualLeftDoubleQuotationMark, position,
+                    length));
+#endif
+}
+bool TurboTokenizer::IsRightDoubleQuotationMark(const std::string &word,
+                                                int position,
+                                                int *length) {
+#ifdef ORIGINAL_PENN_TREEBANK_TOKENIZER
+  return false;
+#else
+  return (IsPattern(word, kTurboRightDoubleQuotationMark, position, length) ||
+          IsPattern(word, kTurboTwoRightSingleQuotationMarks, position,
+                    length) ||
+          IsPattern(word, kTurboRightFrenchQuotationMark, position,
+                    length));
 #endif
 }
 
@@ -174,16 +327,48 @@ bool TurboTokenizer::IsDash(const std::string &word, int position,
   return (IsEmDash(word, position, length) || IsEnDash(word, position, length));
 }
 
-bool TurboTokenizer::IsWhitespace(char c) {
-  return kTurboWhitespaces.find(c) != string::npos;
+bool TurboTokenizer::IsSentenceStartSymbol(const std::string &word,
+                                           int position,
+                                           int *length) {
+  if (position >= word.length()) return false;
+
+  for (const auto & elem : kTurboSentenceStartSymbols) {
+    if (IsPattern(word, elem, position, length))return true;
+  }
+  return false;
 }
 
-bool TurboTokenizer::IsLeftBracket(char c) {
-  return kTurboLeftBrackets.find(c) != string::npos;
+bool TurboTokenizer::IsSentenceEndSymbol(const std::string &word,
+                                         int position,
+                                         int *length) {
+  if (position >= word.length()) return false;
+
+  for (const auto & elem : kTurboSentenceEndSymbols) {
+    if (IsPattern(word, elem, position, length))return true;
+  }
+  return false;
 }
 
-bool TurboTokenizer::IsRightBracket(char c) {
-  return kTurboRightBrackets.find(c) != string::npos;
+bool TurboTokenizer::IsLeftBracket(const std::string &word,
+                                   int position,
+                                   int *length) {
+  if (position >= word.length()) return false;
+
+  for (const auto & elem : kTurboLeftBrackets) {
+    if (IsPattern(word, elem, position, length))return true;
+  }
+  return false;
+}
+
+bool TurboTokenizer::IsRightBracket(const std::string &word,
+                                    int position,
+                                    int *length) {
+  if (position >= word.length()) return false;
+
+  for (const auto & elem : kTurboRightBrackets) {
+    if (IsPattern(word, elem, position, length))return true;
+  }
+  return false;
 }
 
 void TurboTokenizer::LoadAbbreviations(const std::string filepath) {
@@ -367,34 +552,128 @@ void TurboTokenizer::LoadContractionSuffixes(const std::string filepath) {
   contraction_suffix_dictionary_.StopGrowth();
 }
 
+size_t TurboTokenizer::FindFirstOf(const std::string& input_text,
+                                   std::vector<std::string> delims,
+                                   int position,
+                                   int * length) {
+  int i = position;
+  int glyph_rel_offset = 0;
+  while (GetNextUft8GlyphOffset(input_text, i, &glyph_rel_offset) != input_text.npos) {
+    i = i + glyph_rel_offset;
+    for (const auto & elem : delims) {
+      if (IsPattern(input_text, elem, i, length)) {
+        return i;
+      }
+    }
+    i++;
+  }
+  return input_text.npos;
+}
+
+
+
 void TurboTokenizer::SplitSentences(const std::string &text,
                                     std::vector<std::string>* sentences,
                                     std::vector<int>* start_positions,
                                     std::vector<int>* end_positions) {
-  std::string delim = kTurboSentenceEndSymbols;
+
+  std::stack<std::string> brackets_and_quotations;
   int position = 0;
   int start_position = 0;
   int delim_position = 0;
   EatWhitespaces(text, position, &start_position);
   position = start_position;
-  while ((delim_position = ((int)text.find_first_of(delim, position))) != (int)text.npos) {
-    // Validate delimiter (e.g. check if it's not part of an abbreviation).
-    if (ValidateSentenceTerminator(text, start_position, &delim_position)) {
+  int matched_length_first_of = 0;
+  while ((delim_position = ((int)FindFirstOf(text,
+                                             kTurboPunctuationSymbols,
+                                             position,
+                                             &matched_length_first_of))) != (int)text.npos) {
+
+    //check if it is a valid left bracket or QuotationMark
+    //  add symbol to stack
+    //check if it is a valid right bracket or QuotationMark
+    //  subtract symbol from stack
+
+    int matched_length = 0;
+    if (IsParagrapgh(text, delim_position, &matched_length)) {
+      while (!brackets_and_quotations.empty())brackets_and_quotations.pop();
       std::string sentence = text.substr(start_position,
                                          delim_position - start_position);
       int end_position = delim_position;
       sentences->push_back(sentence);
       start_positions->push_back(start_position);
       end_positions->push_back(end_position);
-
-      position = delim_position ;
+      position = delim_position;
       EatWhitespaces(text, position, &start_position);
       position = start_position;
-    } else {
-      position = delim_position+1 ;
-    }
-  }
+    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) && (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
+                                                                                    IsLeftDoubleQuotationMark(text, delim_position, &matched_length))
+               ) {
+      brackets_and_quotations.push(
+        GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)));
+      position = delim_position + matched_length;
+    } else if (
+      (IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
+       IsRightDoubleQuotationMark(text, delim_position, &matched_length))
+      && brackets_and_quotations.top() == text.substr(delim_position, matched_length)) {
+      brackets_and_quotations.pop();
+      position = delim_position + matched_length;
+    } else if ((IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
+                IsLRDoubleQuotationMark(text, delim_position, &matched_length))
+               && (!brackets_and_quotations.empty() &&
+                   brackets_and_quotations.top() == text.substr(delim_position, matched_length))) {
+      brackets_and_quotations.pop();
+      position = delim_position + matched_length;
+    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) &&
+      (brackets_and_quotations.empty()) &&
+               (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
+                IsLRDoubleQuotationMark(text, delim_position, &matched_length))) {
+      brackets_and_quotations.push(
+        GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)));
+      position = delim_position + matched_length;
+    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) && IsLeftBracket(text, delim_position, &matched_length)) {
+      brackets_and_quotations.push(GetBracketsQuotationsClosingSymbol(std::string(1, text[delim_position])));
+      position = delim_position + 1;
+    } else if (IsRightBracket(text, delim_position, &matched_length) &&
+               brackets_and_quotations.top() == std::string(1, text[delim_position])) {
+      brackets_and_quotations.pop();
+      position = delim_position + 1;
+    } else if (IsSentenceStartSymbol(text, delim_position, &matched_length)) {
+      if (brackets_and_quotations.empty() && delim_position - start_position > 0) {
+        std::string sentence = text.substr(start_position,
+                                           delim_position - start_position);
+        int end_position = delim_position;
+        sentences->push_back(sentence);
+        start_positions->push_back(start_position);
+        end_positions->push_back(end_position);
 
+        position = delim_position;
+        EatWhitespaces(text, position, &start_position);
+        position = start_position;
+      } else {
+        position = delim_position + 1;
+      }
+    } else if (IsSentenceEndSymbol(text, delim_position, &matched_length)) {
+      // Validate delimiter (e.g. check if it's not part of an abbreviation).
+      if (brackets_and_quotations.empty() &&
+          ValidateSentenceTerminator(text, start_position, &delim_position)) {
+        std::string sentence = text.substr(start_position,
+                                           delim_position - start_position);
+        int end_position = delim_position;
+        sentences->push_back(sentence);
+        start_positions->push_back(start_position);
+        end_positions->push_back(end_position);
+
+        position = delim_position;
+        EatWhitespaces(text, position, &start_position);
+        position = start_position;
+      } else {
+        position = delim_position + 1;
+      }
+    } else {
+      position = delim_position + 1;
+    };
+  };
   // Last chunk.
   //start_position = position;
   int end_position = (int)text.length();
@@ -416,18 +695,45 @@ void TurboTokenizer::TokenizeWords(const std::string &sentence,
   GetNextWord(sentence, start_position, &word_start_position,
               &word_end_position);
   while (word_start_position < sentence.length()) {
-    const std::string &word =
+    std::string word =
       sentence.substr(word_start_position,
                       word_end_position - word_start_position);
     //std::cerr << "Initial word: " << word << std::endl;
 
-    // Split this word into subwords, if needed.
     std::vector<std::string> subwords;
     std::vector<int> subword_start_positions;
     std::vector<int> subword_end_positions;
-    LookForSubwords(sentence, word_start_position, word_end_position,
-                    &subwords, &subword_start_positions,
-                    &subword_end_positions);
+    // If the word is an url or e-mail, there is nothing to look for.
+    if (IsPotentialEmail(word)) {
+      if (IsLetter(sentence[word_end_position - 1])) {
+        subwords.push_back(word);
+        subword_start_positions.push_back(word_start_position);
+        subword_end_positions.push_back(word_end_position);
+      } else {
+        int i;
+        for (i = word_end_position - 1; i >= word_start_position; --i) {
+          if (IsLetter(sentence[i])) break;
+        }
+        subwords.push_back(sentence.substr(word_start_position,
+                                           i + 1 - word_start_position));
+        subword_start_positions.push_back(word_start_position);
+        subword_end_positions.push_back(i + 1);
+        subwords.push_back(sentence.substr(i + 1,
+                                           word_end_position - word_start_position));
+        subword_start_positions.push_back(i + 1);
+        subword_end_positions.push_back(word_end_position);
+
+      }
+    } else  if (IsPotentialWebSite(word)) {
+      subwords.push_back(word);
+      subword_start_positions.push_back(word_start_position);
+      subword_end_positions.push_back(word_end_position);
+    } else {
+      // Split this word into subwords, if needed.
+      LookForSubwords(sentence, word_start_position, word_end_position,
+                      &subwords, &subword_start_positions,
+                      &subword_end_positions);
+    }
     //for (int k = 0; k < subwords.size(); ++k) {
     //  std::cerr << "Subword: " << subwords[k] << std::endl;
     //}
@@ -488,8 +794,6 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
   std::string word = sentence.substr(start_position,
                                      end_position - start_position);
 
-  //std::cout << "Processing: " << word << endl;
-
   // For each pattern expression, proceed left to right trying to match it.
   for (int position = 0; position < end_position - start_position; ++position) {
     // Current position in the global buffer.
@@ -503,9 +807,8 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     if (IsDoubleQuotationMark(word, position, &match_length)) {
       if (//IsLeftQuotationMark(word[position]) ||
           current_position == 0 ||
-          IsWhitespace(sentence, current_position - 1,
-                       &previous_match_length) ||
-          IsLeftBracket(sentence[current_position - 1])) {
+          IsWhitespace(sentence, current_position - 1, &previous_match_length) ||
+          IsLeftBracket(sentence, current_position - 1, &previous_match_length)) {
         AddWordToken("``",
                      current_position,
                      current_position + match_length,
@@ -536,7 +839,7 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     int current_position = start_position + position;
     int match_length = 1;
 
-    // If it's a oInvertedQuestionMark or a InvertedExclamationMark, it becomes a token.
+    // If it's a InvertedQuestionMark or a InvertedExclamationMark, it becomes a token.
     if ((IsPattern(word, kTurboInvertedQuestionMark, position, &match_length)
          || IsPattern(word, kTurboInvertedExclamationMark, position, &match_length)) &&
         current_position + match_length < sentence.length()) {
@@ -606,6 +909,42 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     // TODO: Handle the special ellipsis character.
     if (IsEllipsis(word, position, &match_length)) {
       AddWordToken((match_length == 2) ? ".." : "...",
+                   current_position,
+                   current_position + match_length,
+                   words,
+                   word_start_positions,
+                   word_end_positions);
+      position += match_length;
+
+      // Now take care of the reminiscent part of the word.
+      LookForSubwords(sentence,
+                      start_position + position,
+                      end_position,
+                      words,
+                      word_start_positions,
+                      word_end_positions);
+
+      end_position = current_position;
+      word = sentence.substr(start_position, end_position - start_position);
+      break;
+    }
+  }
+
+  for (int position = 0; position < end_position - start_position; ++position) {
+    // Current position in the global buffer.
+    int current_position = start_position + position;
+    int match_length = 0;
+
+    // Multiple !!!!! or ???????? become a single token.
+    if (IsExclamationMark(word[position]) || IsQuestionMark(word[position])) {
+      int i = position;
+      int match_length = 0;
+      while (IsExclamationMark(word[i]) || IsQuestionMark(word[i])) {
+        match_length++;
+        i++;
+      }
+      std::string token_word = word.substr(position, match_length);
+      AddWordToken(token_word,
                    current_position,
                    current_position + match_length,
                    words,
@@ -814,8 +1153,9 @@ void TurboTokenizer::LookForSubwords(const std::string &sentence,
     int match_length = 0;
 
     // Any bracket in "<({[]})>" comes a single token.
-    if (IsLeftBracket(word[position]) || IsRightBracket(word[position])) {
-      match_length = 1;
+    if (IsLeftBracket(word, position, &match_length) ||
+        IsRightBracket(word, position, &match_length)) {
+
       std::string token_word = word.substr(position, match_length);
       AddWordToken(token_word,
                    current_position,
@@ -1029,14 +1369,44 @@ bool TurboTokenizer::HasContractionSuffix(const std::string &word,
 bool TurboTokenizer::ValidateSentenceTerminator(const std::string &text,
                                                 int start_position,
                                                 int *terminator_position) {
+
   int word_start_position, word_end_position;
+
   GetWordBoundaries(text, *terminator_position, start_position, (int)text.length() - 1,
                     &word_start_position, &word_end_position);
 
-  if (IsPeriod(text[*terminator_position])) {
+  // There are alphanumeric characters after the termination mark; don't break.
+  if (word_end_position > (*terminator_position) + 1) return false;
 
-    // There are alphanumeric characters after the termination mark; don't break.
-    if (word_end_position > (*terminator_position) + 1) return false;
+  {//check for website/e-mails  
+    int address_start_position, address_end_position;
+    int position = *terminator_position;
+    GetPreviousWhitespace(text, &address_start_position, position);// Find start of word.
+    address_start_position++;
+    GetNextWhitespace(text, position, &address_end_position);// Find end of word.
+    std::string token_word = text.substr(address_start_position,
+                                         address_end_position - address_start_position);
+    if (IsPotentialEmail(token_word)) {
+      if (*terminator_position < address_end_position - 1) {//email cant end with .
+        if (IsLetter(text[address_end_position - 1])) {
+          *terminator_position = address_end_position;
+          return true;
+        } else {
+          int i = address_end_position - 1;
+          while (i >= 0 && !IsLetter(text[i]))
+            i--;
+          *terminator_position = i;
+          return false;
+        }
+      } else {
+        *terminator_position = *terminator_position + 1;
+        return true;
+      }
+    } else if (IsPotentialWebSite(token_word))
+      return false;
+  }
+
+  if (IsPeriod(text[*terminator_position])) {
 
     // If there is a single character before don't break (could be a middle
     // initial).
@@ -1091,10 +1461,9 @@ void TurboTokenizer::EatRightBracketsAndQuotationMarks(const std::string &text,
   int position = start_position;
   int match_length;
   while (position < text.length()) {
-    if (IsQuotationMark(text, position, &match_length)) {
+    if (IsQuotationMark(text, position, &match_length) ||
+        IsRightBracket(text, position, &match_length)) {
       position += match_length;
-    } else if (IsRightBracket(text[position])) {
-      ++position;
     } else {
       break;
     }
@@ -1122,6 +1491,17 @@ void TurboTokenizer::EatWhitespaces(const std::string &text,
 #endif
 }
 
+void TurboTokenizer::GetPreviousWhitespace(const std::string &text,
+                                           int *start_position, int mid_position) {
+  int position = mid_position;
+  for (; position >= 0; --position) {
+    int match_length;
+    if (IsWhitespace(text, position, &match_length)) break;
+  }
+  *start_position = position;
+}
+
+
 void TurboTokenizer::GetNextWhitespace(const std::string &text,
                                        int start_position, int *end_position) {
 #if 1
@@ -1146,30 +1526,191 @@ void TurboTokenizer::GetWordBoundaries(const std::string &text,
                                        int *start_position,
                                        int *end_position) {
   // Get left boundary.
-  const char *buffer = text.c_str();
-  int i;
-  for (i = position - 1; i >= lower_bound_start; --i) {
-    if (!IsAlphanumeric(buffer[i]) && !IsPeriod(buffer[i])) break;
+  int glyph_rel_offset = 0;
+
+  int i = position - 1;
+  while (GetPreviousUft8GlyphOffset(text, i, &glyph_rel_offset) != std::string::npos) {
+    i = i - glyph_rel_offset;
+    int sentenceendsymbolmatchedsize = 0;
+    if (!IsAlphanumeric(text[i]) && !IsSentenceEndSymbol(text, i, &sentenceendsymbolmatchedsize))break;
+    i--;
   }
   *start_position = i + 1;
 
-  if (IsExclamationMark(text[position]) || IsQuestionMark(text[position])) {
-    *end_position = position + 1;
-    return;
-  }
-
   // Get right boundary.
-  for (i = position + 1; i <= upper_bound_end; ++i) {
-    if (!IsAlphanumeric(buffer[i]) && !IsPeriod(buffer[i])) break;
+  i = position + 1;
+  while (GetNextUft8GlyphOffset(text, i, &glyph_rel_offset) != std::string::npos) {
+    i = i + glyph_rel_offset;
+    int sentenceendsymbolmatchedsize = 0;
+    if (!IsAlphanumeric(text[i]) && !IsSentenceEndSymbol(text, i, &sentenceendsymbolmatchedsize))break;
+    i++;
   }
   *end_position = i;
 }
 
-bool TurboTokenizer::IsPunctuation(char c) {
-  const char *symbol = kTurboPunctuationSymbols;
-  while (*symbol != '\0') {
-    if (c == *symbol) return true;
-    ++symbol;
+bool TurboTokenizer::IsPunctuation(const std::string & text,
+                                   int position,
+                                   int *length) {
+  for (const auto & elem : kTurboPunctuationSymbols) {
+    if (IsPattern(text, elem, position, length))return true;
   }
   return false;
+}
+
+bool TurboTokenizer::
+ValidateTextBracketsQuotationsCoherence(const std::string & text) {
+  static const std::vector<std::string> BracketsQuotationsSymbols = {
+    "(",
+    ")",
+    "[",
+    "]",
+    "{",
+    "}",
+    kTurboInvertedQuestionMark ,
+    kTurboInvertedExclamationMark,
+    kTurboLeftFrenchQuotationMark,
+    kTurboRightFrenchQuotationMark ,
+    kTurboLeftDoubleQuotationMark,
+    kTurboRightDoubleQuotationMark ,
+    kTurboLeftSingleQuotationMark,
+    kTurboRightSingleQuotationMark,
+    kTurboTwoLeftSingleQuotationMarks,
+    kTurboTwoRightSingleQuotationMarks,
+    kTurboSingleQuotationMark ,
+    kTurboDoubleQuotationMark ,
+    kTurboManualDoubleQuotationMark,
+    kTurboManualLeftDoubleQuotationMark,
+    kTurboManualLeftSingleQuotationMark
+  };
+
+  std::stack<std::pair<std::string, int>> brackets_and_quotations;
+
+  int position = 0;
+  int start_position = 0;
+  int delim_position = 0;
+  position = start_position;
+  int matched_length_first_of = 0;
+  while ((delim_position = ((int)FindFirstOf(text,
+                                             BracketsQuotationsSymbols,
+                                             position,
+                                             &matched_length_first_of))) != (int)text.npos) {
+
+    int matched_length = 0;
+    if (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
+        IsLeftDoubleQuotationMark(text, delim_position, &matched_length)) {
+      brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)), delim_position }
+      );
+      position = delim_position + matched_length;
+    } else if ((IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
+                IsRightDoubleQuotationMark(text, delim_position, &matched_length))
+               && brackets_and_quotations.top().first == text.substr(delim_position, matched_length)) {
+      brackets_and_quotations.pop();
+      position = delim_position + matched_length;
+    } else if (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
+               IsLRDoubleQuotationMark(text, delim_position, &matched_length)) {
+      if (!brackets_and_quotations.empty() &&
+          brackets_and_quotations.top().first == text.substr(delim_position, matched_length))
+        brackets_and_quotations.pop();
+      else
+        brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)), delim_position });
+      position = delim_position + matched_length;
+    } else if (IsLeftBracket(text, delim_position, &matched_length)) {
+      brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(std::string(1, text[delim_position])), delim_position }
+      );
+      position = delim_position + 1;
+    } else if (IsRightBracket(text, delim_position, &matched_length) &&
+               brackets_and_quotations.top().first == std::string(1, text[delim_position])) {
+      brackets_and_quotations.pop();
+      position = delim_position + 1;
+    } else
+      position = delim_position + 1;
+  }
+  return brackets_and_quotations.empty();
+}
+
+bool TurboTokenizer::
+ValidateBracketsQuotationsClosureLookAhead(const std::string & text,
+                                           int start_position,
+                                           int max_lookahead_window) {
+  static const std::vector<std::string> BracketsQuotationsSymbols = {
+    "(",
+    ")",
+    "[",
+    "]",
+    "{",
+    "}",
+    kTurboInvertedQuestionMark ,
+    kTurboInvertedExclamationMark,
+    kTurboLeftFrenchQuotationMark,
+    kTurboRightFrenchQuotationMark ,
+    kTurboLeftDoubleQuotationMark,
+    kTurboRightDoubleQuotationMark ,
+    kTurboLeftSingleQuotationMark,
+    kTurboRightSingleQuotationMark,
+    kTurboTwoLeftSingleQuotationMarks,
+    kTurboTwoRightSingleQuotationMarks,
+    kTurboSingleQuotationMark ,
+    kTurboDoubleQuotationMark ,
+    kTurboManualDoubleQuotationMark,
+    kTurboManualLeftDoubleQuotationMark,
+    kTurboManualLeftSingleQuotationMark
+  };
+
+  std::stack<std::pair<std::string, int>> brackets_and_quotations;
+
+  int position = 0;
+  int delim_position = 0;
+  position = start_position;
+  int matched_length_first_of = 0;
+  while ((delim_position = ((int)FindFirstOf(text,
+                                             BracketsQuotationsSymbols,
+                                             position,
+                                             &matched_length_first_of))) != (int)text.npos) {
+
+    //failed 
+    if (delim_position > start_position + max_lookahead_window)
+      break;
+
+    int matched_length = 0;
+    if (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
+        IsLeftDoubleQuotationMark(text, delim_position, &matched_length)) {
+      brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)), delim_position }
+      );
+      position = delim_position + matched_length;
+    } else if ((IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
+                IsRightDoubleQuotationMark(text, delim_position, &matched_length))
+               && !brackets_and_quotations.empty() && brackets_and_quotations.top().first == text.substr(delim_position, matched_length)) {
+      brackets_and_quotations.pop();
+      position = delim_position + matched_length;
+    } else if (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
+               IsLRDoubleQuotationMark(text, delim_position, &matched_length)) {
+      if (!brackets_and_quotations.empty() &&
+          brackets_and_quotations.top().first == text.substr(delim_position, matched_length))
+        brackets_and_quotations.pop();
+      else
+        brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)), delim_position });
+      position = delim_position + matched_length;
+    } else if (IsLeftBracket(text, delim_position, &matched_length)) {
+      brackets_and_quotations.push(
+      { GetBracketsQuotationsClosingSymbol(std::string(1, text[delim_position])), delim_position }
+      );
+      position = delim_position + 1;
+    } else if (IsRightBracket(text, delim_position, &matched_length) &&
+               !brackets_and_quotations.empty() && brackets_and_quotations.top().first == std::string(1, text[delim_position])) {
+      brackets_and_quotations.pop();
+      position = delim_position + 1;
+    } else
+      position = delim_position + 1;
+
+    //managed to close opening bracket/quotation before max window
+    if (brackets_and_quotations.empty())
+      return true;
+  }
+  return false;
+
 }

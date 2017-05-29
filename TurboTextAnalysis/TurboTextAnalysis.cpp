@@ -6,6 +6,7 @@
 #include "TurboTokenizer.h"
 #include "ICUTokenizer.h"
 #include "glogconfig.h"
+#include "encoding.h"
 
 namespace {
 template <typename TType>
@@ -42,19 +43,6 @@ void SplitString(const std::string &text,
   std::string temp = text.substr(start);
   if (temp != "") output->push_back(temp);
 };
-
-/**
-* @brief Count the number of utf8 glyphs in string.
-*        Assumes the input string is in utf8.
-* @param[in] str Input utf8 text.
-* @returns Number of utf8 glyphs.
-*/
-size_t CountUtf8Glyphs(const std::string &str) {
-  size_t j = 0;
-  for (const auto &c : str)
-    if ((c & 0xc0) != 0x80) j++;
-  return j;
-}
 }
 
 // Map of workers per language.
@@ -892,8 +880,10 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
             read_ok &= ReadSettingSafe(language, "filepath_coreference_resolver_model",
                                        filepath_coreference_resolver_model);
 
-            read_ok &= ReadSettingSafe(language, "break_token_on_hyphen",
-                                       tokenizer_options.break_token_on_hyphen);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "break_token_on_hyphen",
+                                                     true,
+                                                     tokenizer_options.break_token_on_hyphen);
 
             if (filepath_abbreviations != "")
               filepath_abbreviations = path + filepath_abbreviations;
