@@ -859,26 +859,46 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                                                false,
                                                tokenizer_outputs_unicode_glyph_aware_offsets))
               return false;
-            read_ok &= ReadSettingSafe(language, "filepath_abbreviations",
-                                       filepath_abbreviations);
-            read_ok &= ReadSettingSafe(language, "filepath_contractions",
-                                       filepath_contractions);
-            read_ok &= ReadSettingSafe(language, "filepath_contraction_suffixes",
-                                       filepath_contraction_suffixes);
-            read_ok &= ReadSettingSafe(language, "filepath_lemmas",
-                                       filepath_lemmas);
-            read_ok &= ReadSettingSafe(language, "filepath_tagger_model",
-                                       filepath_tagger_model);
-            read_ok &= ReadSettingSafe(language, "filepath_morphological_tagger_model",
-                                       filepath_morphological_tagger_model);
-            read_ok &= ReadSettingSafe(language, "filepath_entity_recognizer_model",
-                                       filepath_entity_recognizer_model);
-            read_ok &= ReadSettingSafe(language, "filepath_parser_model",
-                                       filepath_parser_model);
-            read_ok &= ReadSettingSafe(language, "filepath_semantic_parser_model",
-                                       filepath_semantic_parser_model);
-            read_ok &= ReadSettingSafe(language, "filepath_coreference_resolver_model",
-                                       filepath_coreference_resolver_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_abbreviations",
+                                                     std::string(""),
+                                                     filepath_abbreviations);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_contractions",
+                                                     std::string(""),
+                                                     filepath_contractions);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_contraction_suffixes",
+                                                     std::string(""),
+                                                     filepath_contraction_suffixes);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_lemmas",
+                                                     std::string(""),
+                                                     filepath_lemmas);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_tagger_model",
+                                                     std::string(""),
+                                                     filepath_tagger_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_morphological_tagger_model",
+                                                     std::string(""),
+                                                     filepath_morphological_tagger_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_entity_recognizer_model",
+                                                     std::string(""),
+                                                     filepath_entity_recognizer_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_parser_model",
+                                                     std::string(""),
+                                                     filepath_parser_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_semantic_parser_model",
+                                                     std::string(""),
+                                                     filepath_semantic_parser_model);
+            read_ok &= ReadorDefaultLibConfigSetting(language,
+                                                     "filepath_coreference_resolver_model",
+                                                     std::string(""),
+                                                     filepath_coreference_resolver_model);
 
             read_ok &= ReadorDefaultLibConfigSetting(language,
                                                      "break_token_on_hyphen",

@@ -125,6 +125,11 @@ cdef class PyCPBSSink:
     def __dealloc__(self):
         pass
 
+# decode(encoding='UTF-8') is implicit with:
+#   https://docs.python.org/3/c-api/arg.html#c.Py_BuildValue
+#   s (str or None) [char *]
+#     Convert a null-terminated C string to a Python str object using 'utf-8' encoding. If the C string pointer is NULL, None is used.
+
 cdef class PyCppToPyTurboSink(PyCPBSSink):	
     cdef CppToPyTurboSink* c_derivedsink
     cdef bool allocate
@@ -196,7 +201,7 @@ cdef class PyCTurboTextAnalysis:
         cdef LoadOptions c_options
         if pyloadoptions is None:	
             retval = self.c_turbotextanalysis.LoadLanguage(language.encode(encoding='UTF-8'), 
-                                                            path.encode(encoding='UTF-8'))
+                                                           path.encode(encoding='UTF-8'))
         else:
             c_options.load_tagger = pyloadoptions.load_tagger
             c_options.load_parser = pyloadoptions.load_parser
@@ -205,8 +210,8 @@ cdef class PyCTurboTextAnalysis:
             c_options.load_semantic_parser = pyloadoptions.load_semantic_parser
             c_options.load_coreference_resolver = pyloadoptions.load_coreference_resolver
             retval = self.c_turbotextanalysis.LoadLanguage(language.encode(encoding='UTF-8'), 
-                                                            path.encode(encoding='UTF-8'),
-                                                            &c_options)
+                                                           path.encode(encoding='UTF-8'),
+                                                           &c_options)
         return retval
 
     def analyse(self, 
@@ -217,8 +222,8 @@ cdef class PyCTurboTextAnalysis:
         cdef AnalyseOptions c_options
         if pyanalyseoptions is None:
             retval = self.c_turbotextanalysis.Analyse(language.encode(encoding='UTF-8'),
-                                                  text.encode(encoding='UTF-8'), 
-                                                  pycbssink.c_sink)
+                                                      text.encode(encoding='UTF-8'), 
+                                                      pycbssink.c_sink)
         else:
             c_options.use_tagger = pyanalyseoptions.use_tagger
             c_options.use_parser = pyanalyseoptions.use_parser

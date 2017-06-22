@@ -5,14 +5,16 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
-    TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
+    TURBO_PARSER_PATH = "F:\\Projects\\TurboParser_DN"
+    TURBO_TEXT_ANALYSIS_PATH = "F:\\Projects\\TurboTextAnalysis"
+    ICU_INC_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\include"
+    ICU_LIB_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\lib64"
     
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
     language="c++",
     extra_compile_args=["/Zi", "/O2",  "/DGOOGLE_GLOG_DLL_DECL=", "/DGFLAGS_DLL_DECL="],
-    #extra_link_args=["/DEBUG"],
+	#extra_link_args=["/DEBUG"],
     include_dirs=
     [".",
     "..",
@@ -34,7 +36,8 @@ if os.name == 'nt':
     os.path.join(TURBO_PARSER_PATH, "deps", "googletest", "src"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis"),
     os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysisPython"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps")],
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps"),
+    os.path.join(ICU_INC_PATH)],
     library_dirs=
     [os.path.join(TURBO_TEXT_ANALYSIS_PATH, "x64", "Release"),
     os.path.join(TURBO_PARSER_PATH, "vsprojects", "x64", "Release"),    
@@ -42,7 +45,8 @@ if os.name == 'nt':
     os.path.join(TURBO_PARSER_PATH, "deps", "gflags-2.0", "x64", "Release"),            
     os.path.join(TURBO_PARSER_PATH, "deps", "AD3-2.0.2", "vsprojects", "x64", "Release"),
     os.path.join(TURBO_PARSER_PATH, "deps", "googletest", "msvc", "x64", "Release"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "x64", "Release")],     
+    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "x64", "Release"),
+    os.path.join(ICU_LIB_PATH)],    
     extra_objects=
     ["TurboTextAnalysis.lib",
     "libturboparser.lib", 
@@ -50,8 +54,11 @@ if os.name == 'nt':
     "libgflags_140mdx64.lib",           
     "libglog_static_140mdx64.lib",      
     "gtest-md_140mdx64.lib",
-    "libconfig++.lib"]
-    )]          
+    "libconfig++.lib",
+    "icuucd.lib",
+    "icuind.lib"]
+    )]        
+    #"libconfig++_140mdx64.lib",    
     setup(cmdclass={'build_ext': build_ext},
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )

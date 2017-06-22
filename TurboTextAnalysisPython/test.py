@@ -126,6 +126,7 @@ for x in sink.client_document_data:
 
 #*******************
 #Example with custom tokenization
+sink = ClientSideSinkRedefined(True)
 
 sentences_words = [ [ "Obama", "visits", "Portugal", "." ],
   [ "He", "is", "staying", "3", "days","." ]];
@@ -137,11 +138,11 @@ sentences_end_position = [[ 5, 12, 21, 22 ],
 original_sentences_words = sentences_words;
 
 turbotextanalysis.analyse_with_tokens(language, 
-                                        sentences_words,
-                                        original_sentences_words,
-                                        sentence_start_positions,
-                                        sentences_start_positions,
-                                        sentences_end_position, sink, options)
+                                      sentences_words,
+                                      original_sentences_words,
+                                      sentence_start_positions,
+                                      sentences_start_positions,
+                                      sentences_end_position, sink, options)
 if retval != 0:
     print("ERROR in PyCTurboTextAnalysis analyse")
     print("Return value: ", retval)

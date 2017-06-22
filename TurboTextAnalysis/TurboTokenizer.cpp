@@ -20,34 +20,30 @@ const std::vector<std::string> kTurboSentenceEndSymbols = { ".",
 "!",
 "?" };
 const std::string kTurboAbbreviatonMarkers = ".";
-const std::vector<std::string> kTurboWhitespaces = { " ",
-"\t",
-"\r",
-"\n",
-"\f",
-"\v",
-{ '\xc2', '\xa0' },         //kTurboNonBreakingSpace          
-{ '\xe2', '\x80', '\x8b' }, //kTurboZeroWidthSpace            
-{ '\xef', '\xbb', '\xbf' }  //kTurboZeroWidthNonBreakingSpace 
-};
-const std::vector<std::string> kTurboLeftBrackets = { "{",
-"[",
-"(" };
-const std::vector<std::string> kTurboRightBrackets = { "}",
-"]",
-")" };
 
-const std::string kTurboApostrophe = "’";
+const std::string  kTurboNonBreakingSpace = { '\xc2', '\xa0' };
+const std::string  kTurboZeroWidthSpace = { '\xe2', '\x80', '\x8b' };
+const std::string  kTurboZeroWidthNonBreakingSpace = { '\xef', '\xbb', '\xbf' };
+const std::vector<std::string>  kTurboWhitespaces = { " ","\t","\r","\n","\f","\v",
+ kTurboNonBreakingSpace,
+ kTurboZeroWidthSpace,
+ kTurboZeroWidthNonBreakingSpace
+};
+
+const std::vector<std::string> kTurboLeftBrackets = { "{","[","(" };
+const std::vector<std::string> kTurboRightBrackets = { "}","]",")" };
+
+const std::string kTurboApostrophe = { '\xe2' ,'\x80', '\x99' };
 const std::string kTurboManualApostrophe = "'";
 
-const std::string kTurboLeftFrenchQuotationMark = "«";
-const std::string kTurboRightFrenchQuotationMark = "»";
-const std::string kTurboLeftDoubleQuotationMark = "“";
-const std::string kTurboRightDoubleQuotationMark = "”";
-const std::string kTurboLeftSingleQuotationMark = "‘";
-const std::string kTurboRightSingleQuotationMark = "’";
-const std::string kTurboTwoLeftSingleQuotationMarks = "‘‘";
-const std::string kTurboTwoRightSingleQuotationMarks = "’’";
+const std::string kTurboLeftFrenchQuotationMark = { '\xc2' ,'\xab' };
+const std::string kTurboRightFrenchQuotationMark = { '\xc2' ,'\xbb' };
+const std::string kTurboLeftDoubleQuotationMark = { '\xe2' ,'\x80', '\x9c' };
+const std::string kTurboRightDoubleQuotationMark = { '\xe2', '\x80', '\x9d' };
+const std::string kTurboLeftSingleQuotationMark = { '\xe2' ,'\x80' ,'\x98' };
+const std::string kTurboRightSingleQuotationMark = { '\xe2' ,'\x80' ,'\x99' };
+const std::string kTurboTwoLeftSingleQuotationMarks = { '\xe2' ,'\x80' ,'\x98', '\xe2' ,'\x80' ,'\x98' };
+const std::string kTurboTwoRightSingleQuotationMarks = { '\xe2' ,'\x80' ,'\x99','\xe2' ,'\x80' ,'\x99' };
 const std::string kTurboSingleQuotationMark = "'";
 const std::string kTurboDoubleQuotationMark = "\"";
 const std::string kTurboManualDoubleQuotationMark = "''";
@@ -56,11 +52,11 @@ const std::string kTurboManualLeftSingleQuotationMark = "`";
 
 const std::string kTurboManualEllipsis = "...";
 const std::string kTurboManual2dotEllipsis = "..";
-const std::string kTurboEllipsisSymbol = "…";
+const std::string kTurboEllipsisSymbol = { '\xe2' ,'\x80' ,'\xa6' };
 const std::string kTurboManualEnDash = "--";
-const std::string kTurboEnDashSymbol = "–";
+const std::string kTurboEnDashSymbol = { '\xe2' ,'\x80' ,'\x93' };
 const std::string kTurboManualEmDash = "---";
-const std::string kTurboEmDashSymbol = "—";
+const std::string kTurboEmDashSymbol = { '\xe2' ,'\x80' ,'\x94' };
 
 const std::vector<std::string> kTurboPunctuationSymbols = {
   "!",
@@ -606,9 +602,9 @@ void TurboTokenizer::SplitSentences(const std::string &text,
       position = delim_position;
       EatWhitespaces(text, position, &start_position);
       position = start_position;
-    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) && (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
-                                                                                    IsLeftDoubleQuotationMark(text, delim_position, &matched_length))
-               ) {
+    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) &&
+      (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
+       IsLeftDoubleQuotationMark(text, delim_position, &matched_length))) {
       brackets_and_quotations.push(
         GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)));
       position = delim_position + matched_length;
@@ -1415,6 +1411,9 @@ bool TurboTokenizer::ValidateSentenceTerminator(const std::string &text,
     const std::string &word =
       text.substr(word_start_position,
                   word_end_position - word_start_position);
+
+    // If there are previous periods in that word, it could be an abbreviation.
+    if (std::count(word.begin(), word.end(), '.') > 1) return false;
 
     // Check if the word is an abbreviation.
     std::string word_lc = word;

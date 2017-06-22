@@ -270,13 +270,18 @@ void ICUTokenizer::SplitSentences(const std::string &text,
                                   std::vector<int>* start_positions,
                                   std::vector<int>* end_positions) {
   BreakIterator* boundary;
-  UnicodeString stringToExamine = UnicodeString::fromUTF8(text);
+  StringPiece strpiece = StringPiece(text.c_str(),
+                                     text.length());
+  UnicodeString stringToExamine = UnicodeString::fromUTF8(strpiece);
   UErrorCode status = U_ZERO_ERROR;
   // TODO (dan) : Consider storing some BreakIterator (both sentence and word level) 
   // in the object tokenizer, as they may be some time consuming in some languages 
   // that require loading dictionaries
   boundary = BreakIterator::createSentenceInstance(Locale(m_language.c_str())
                                                    , status);
+  if (!U_SUCCESS(status))
+    std::cerr << "Failed ICU BreakIterator::createSentenceInstance";
+
   boundary->setText(stringToExamine);
 
   int32_t start = boundary->first();
@@ -297,13 +302,18 @@ void ICUTokenizer::TokenizeWords(const std::string &sentence,
                                  std::vector<int>* start_positions,
                                  std::vector<int>* end_positions) {
   BreakIterator* boundary;
-  UnicodeString stringToExamine = UnicodeString::fromUTF8(sentence);
+  StringPiece strpiece = StringPiece(sentence.c_str(),
+                                     sentence.length());
+  UnicodeString stringToExamine = UnicodeString::fromUTF8(strpiece);
   UErrorCode status = U_ZERO_ERROR;
   // TODO (dan) : Consider storing some BreakIterator (both sentence and word level) 
   // in the object tokenizer, as they may be some time consuming in some languages 
   // that require loading dictionaries
   boundary = BreakIterator::createWordInstance(Locale(m_language.c_str())
                                                , status);
+  if (!U_SUCCESS(status))
+    std::cerr << "Failed ICU BreakIterator::createWordInstance";
+
   boundary->setText(stringToExamine);
 
   int32_t start = boundary->first();
