@@ -117,15 +117,8 @@ public:
                          coreference_resolver)));
   }
 
-  bool FindLanguageWorkers(const std::string &language,
-                           CTurboWorkers* turbo_workers) {
-    auto it = find(language);
-    if (it != end()) {
-      turbo_workers = it->second;
-      return true;
-    } else {
-      return false;
-    }
+  bool FindLanguageWorkers(const std::string &language) {
+    return  find(language) != end();
   }
 public:
   //To lock LoadLanguage access

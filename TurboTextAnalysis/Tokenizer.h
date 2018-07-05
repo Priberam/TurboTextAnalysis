@@ -33,9 +33,18 @@ protected:
     return false;
   }
   bool IsPotentialEmail(std::string s) {
-    if (s.find("@") != std::string::npos)
-      return true;
-    return false;
+    auto at_pos = s.find("@");
+    if (at_pos != std::string::npos) {
+      if (at_pos > 0 && at_pos < s.size() - 3) {
+        auto dot_pos = s.substr(at_pos).find(".");
+        if (dot_pos != std::string::npos && dot_pos - at_pos > 1 && dot_pos < s.size() - 1) {
+          return true;
+        } else
+          return false;
+      } else
+        return false;
+    } else
+      return false;
   }
 
   std::unordered_set<std::string> web_words_ =
@@ -43,7 +52,7 @@ protected:
     "www", "ww3",
     ".edu", ".com", ".net", ".gov", ".org",
     ".html"
-    };
+  };
 };
 
 #endif

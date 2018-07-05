@@ -76,6 +76,11 @@ int CrossPlatfTurboAnalysis::Analyse(const char * language,
     if (use_coreference_resolver != module_properties.end())
       use_options.use_coreference_resolver =
       (use_coreference_resolver->second == "true") ? true : false;
+
+    auto emit_entity_strings = module_properties.find("emit_entity_strings");
+    if (emit_entity_strings != module_properties.end())
+      use_options.emit_entity_strings =
+      (emit_entity_strings->second == "true") ? true : false;
   }
   return cturbotextanalysis.
     Analyse(language,

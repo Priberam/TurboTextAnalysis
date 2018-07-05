@@ -14,6 +14,7 @@
 #include <iostream>
 #include <string>
 #include "deps/encoding.h"
+using namespace local_encoding_lib;
 
 #ifdef _DYNAMICLIBRARY_LINUX
 #include <dlfcn.h>

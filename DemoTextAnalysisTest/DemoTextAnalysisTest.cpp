@@ -122,12 +122,35 @@ int main() {
 
   std::string language = "en";
   std::string path = "../Data/";
-  std::string text = u8"Obama visits Portugal. He is staying 3 days.";
+  const std::string kTurboInvertedQuestionMark = { '\xc2', '\xbf' };
+  std::string text =
+    //kTurboInvertedQuestionMark +
+    //u8"Todo por no poder andar " +
+    //kTurboInvertedQuestionMark +
+    //u8"Asd pr alasd" +
+    //kTurboInvertedQuestionMark +
+    //u8"O por el apellido bonito?\n"
+    u8"They love her!!\n"
+    u8"She's beautiful : \"Marry me!\" they say.\n"
+    u8"People (common folk, right?), really deify Hollywood stars.\n"
+    u8"I have her e-mail : scarllet@gmail.com.\n"
+    u8"She has also a very personnal blog http://www.redvelvet.com/blog=ASd&sad?=dasd which is very cool.\n"
+    //u8"AS sdasd sdasd.\n"
+    //u8"e isso?Ou nao.\n"
+    //u8"Tens o meu cora?ao na mao.\n"
+    //u8"Tens o meu cora?ao na mao. "
+    u8"You really think he said \"I wont drink\nYou heard me?!\"? "
+    u8"You really think he said.\nI wont drink\nYou heard me?! "
+    u8"You won't believe this. He's insane.\n"
+    u8"You really gotta love that (You won't believe this. He's insane.) type of book.\n"
+    u8"Donald Trump talks with Barack Obama, Angela Merkel.\n"
+    u8"Live ?!*@ Like a Suicide"
+    ;
 
   LoadOptions load_options;
   load_options.load_tagger = true;
   load_options.load_parser = false;
-  load_options.load_morphological_tagger = true;
+  load_options.load_morphological_tagger = false;
   load_options.load_entity_recognizer = true;
   load_options.load_semantic_parser = false;
   load_options.load_coreference_resolver = false;
@@ -141,10 +164,11 @@ int main() {
   AnalyseOptions options;
   options.use_tagger = true;
   options.use_parser = false;
-  options.use_morphological_tagger = true;
+  options.use_morphological_tagger = false;
   options.use_entity_recognizer = true;
   options.use_semantic_parser = false;
   options.use_coreference_resolver = false;
+  options.emit_entity_strings = true;
 
   retval = text_analyser->Analyse(language,
                                   text,
@@ -156,30 +180,29 @@ int main() {
   std::ofstream doc_sink_dump("doc_sink.dump");
   doc_sink.PrintContent(doc_sink_dump);
   doc_sink_dump.close();
-
-  std::vector<std::vector<std::string>> sentences_words = { { "Obama", "visits", "Portugal", "." },
-  { "He", "is", "staying", "3", "days","." } };
-  std::vector<int> sentence_start_positions = { 0, 23 };
-  std::vector<std::vector<int> > sentences_start_positions
-    = { { 0, 6, 13, 21 },
-    { 0, 3, 6, 14, 16, 20 } };
-  std::vector<std::vector<int> > sentences_end_position
-    = { { 5, 12, 21, 22 },
-    { 2, 5, 13, 15, 20, 21 } };
-
-  retval = text_analyser->Analyse(language,
-                                  sentences_words,
-                                  {},
-                                  sentence_start_positions,
-                                  sentences_start_positions,
-                                  sentences_end_position,
-                                  &doc_sink,
-                                  &options);
-  if (retval != 0)
-    std::cerr << "Error in CTurboTextAnalysis Analyse" << std::endl;
-
-  //doc_sink.PrintContent();
-
+  
+  //std::vector<std::vector<std::string>> sentences_words = { { "Obama", "visits", "Portugal", "." },
+  //{ "He", "is", "staying", "3", "days","." } };
+  //std::vector<int> sentence_start_positions = { 0, 23 };
+  //std::vector<std::vector<int> > sentences_start_positions
+  //  = { { 0, 6, 13, 21 },
+  //  { 0, 3, 6, 14, 16, 20 } };
+  //std::vector<std::vector<int> > sentences_end_position
+  //  = { { 5, 12, 21, 22 },
+  //  { 2, 5, 13, 15, 20, 21 } };
+  //
+  //retval = text_analyser->Analyse(language,
+  //                                sentences_words,
+  //                                {},
+  //                                sentence_start_positions,
+  //                                sentences_start_positions,
+  //                                sentences_end_position,
+  //                                &doc_sink,
+  //                                &options);
+  //if (retval != 0)
+  //  std::cerr << "Error in CTurboTextAnalysis Analyse" << std::endl;
+  //
+  ////doc_sink.PrintContent();
   delete text_analyser;
   return 0;
 }

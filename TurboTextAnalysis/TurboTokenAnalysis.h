@@ -1,6 +1,7 @@
 // PBSAnalysis.h : Declaration of the CPBSAnalysis
 
-#pragma once
+#ifndef TURBOTOKENANALYSIS_H_
+#define TURBOTOKENANALYSIS_H_
 //#include "resource.h"       // main symbols
 
 #include <string>
@@ -120,4 +121,7 @@ public:
 
 #if 0
   OBJECT_ENTRY_AUTO(__uuidof(PBSAnalysis), CPBSAnalysis)
+#endif
+
+
 #endif

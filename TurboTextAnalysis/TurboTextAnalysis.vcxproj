@@ -30,7 +30,7 @@
     <ProjectGuid>{87662244-CA3F-4275-8C9B-BE501CE557B7}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>TurboTextAnalysis</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.14393.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -192,16 +192,16 @@
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;GOOGLE_GLOG_DLL_DECL=;GFLAGS_DLL_DECL=;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;C:\externallibs\FullFolders\icu4c-59_1-src\icu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>true</OmitFramePointers>
-      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;C:\externallibs\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -224,7 +224,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_LIB;GOOGLE_GLOG_DLL_DECL=;GFLAGS_DLL_DECL=;%(PreprocessorDefinitions);</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;C:\externallibs\FullFolders\icu4c-59_1-src\icu\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..;..\deps;..\deps\libconfig-1.4.9\lib;C:\Projects\TurboParser_DN\libturboparser;C:\Projects\TurboParser_DN\src\util;C:\Projects\TurboParser_DN\src\classifier;C:\Projects\TurboParser_DN\src\sequence;C:\Projects\TurboParser_DN\src\tagger;C:\Projects\TurboParser_DN\src\parser;C:\Projects\TurboParser_DN\src\entity_recognizer;C:\Projects\TurboParser_DN\src\semantic_parser;C:\Projects\TurboParser_DN\src\coreference_resolver;C:\Projects\TurboParser_DN\src\morphological_tagger;C:\Projects\TurboParser_DN\deps\AD3-2.0.2;C:\Projects\TurboParser_DN\deps\glog-0.3.2\src\windows;C:\Projects\TurboParser_DN\deps\gflags-2.0\src\windows\;C:\externallibs\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
@@ -240,7 +240,7 @@
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
       <AdditionalDependencies>libturboparser.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Projects\TurboParser_DN\vsprojects\x64\Release O0</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Projects\TurboParser_DN\vsprojects\x64\Release</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -258,8 +258,8 @@
     <ClCompile Include="TurboTokenizer.cpp" />
     <ClCompile Include="TurboTokenizer_test.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release O0|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release O0|x64'">true</ExcludedFromBuild>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

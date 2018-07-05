@@ -322,7 +322,7 @@ void ICUTokenizer::TokenizeWords(const std::string &sentence,
        start = end, end = boundary->next()) {
     bool is_ponctuation = false;
     int breakType = boundary->getRuleStatus();
-    if (breakType != UBRK_WORD_NONE) {
+    if (breakType == UBRK_WORD_NONE) {
       is_ponctuation = true;
     }
 

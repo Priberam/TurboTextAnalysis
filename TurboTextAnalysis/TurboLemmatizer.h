@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <algorithm>
 #include "hashing.h"
 #include "Alphabet.h"

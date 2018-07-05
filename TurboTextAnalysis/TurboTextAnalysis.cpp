@@ -1,6 +1,7 @@
 // TurboTextAnalysis.cpp : Implementation of DLL Exports.
 
 #include "TurboTextAnalysis.h"
+#include <stack>
 #include "TurboParserInterface.h"
 #include "TurboWorkers.h"
 #include "TurboTokenizer.h"
@@ -48,14 +49,6 @@ void SplitString(const std::string &text,
 // Map of workers per language.
 CTurboWorkerMap _worker_map;
 TurboParserInterface::TurboParserInterface *_interface = nullptr;
-
-//Variables to select modes of execution
-static bool default_use_tagger = true;
-static bool default_use_parser = true;
-static bool default_use_morphological_tagger = true;
-static bool default_use_entity_recognizer = true;
-static bool default_use_semantic_parser = true;
-static bool default_use_coreference_resolver = true;
 
 int CTurboTextAnalysis::Analyse(const std::string &language,
                                 const std::string &text,
@@ -121,11 +114,11 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
                                            &start_positions,
                                            &end_positions);
 
-#if 0
+  #if 0
     for (int i = 0; i < words.size(); ++i)
       std::cout << words[i] << " " << std::endl;
-#endif
-#if 0
+  #endif
+  #if 0
     for (int i = 0; i < words.size(); ++i) {
       std::cout << "["
         << sentence.substr(start_positions[i],
@@ -133,9 +126,9 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
         << "] ";
     }
     std::cout << std::endl;
-#endif
+  #endif
 
-#if 0
+  #if 0
     StringSplit(sentence, " ", &words);
     int offset = 0;
     for (int i = 0; i < words.size(); i++) {
@@ -148,7 +141,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       ++offset; // The word separator.
     }
     --offset; //Remove the extra word separator.
-#endif
+  #endif
   }
 
   if (sentences_words.size() != sentences.size()) {
@@ -158,10 +151,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
   if (!workers->tokenizer_outputs_unicode_glyph_aware_offsets()) {
     //Change start and end positions from byte-wise to glyph-wise values
-    //The white spaces between tokens (in case of existence), are assumed
-    //to be 1 byte each (same size either byte-wise to glyph-wise).
-    //Current white spaces are " " "\t" "\r" "\n" "\f" "\v", as described in
-    //variable kTurboWhitespaces in TurboTokenizer.cpp
     std::vector<int> glyphaware_sentence_start_positions;
     std::vector<
       std::vector<int> > glyphaware_sentences_start_positions(sentences.size());
@@ -170,34 +159,39 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
 
     int glyphaware_sentence_curr_pos = 0;
     for (int i = 0; i < sentences.size(); ++i) {
+      const std::string &sentence = sentences[i];
       const std::vector<std::string> & sentence_words = sentences_words[i];
       std::vector<std::string> & original_sentence_words = original_sentences_words[i];
 
+      size_t str_crop_begin =
+        (i == 0) ? 0 : (sentence_start_positions[i - 1] +
+                        sentences_end_positions[i - 1][sentences_end_positions[i - 1].size() - 1]);
+      size_t str_crop_end = sentence_start_positions[i] + sentences_start_positions[i][0];
+      size_t str_crop_len = str_crop_end - str_crop_begin;
       glyphaware_sentence_curr_pos +=
-        (i == 0 ? 0 :
-        (
-         (sentence_start_positions[i] +
-          sentences_start_positions[i][0]) -
-          (sentence_start_positions[i - 1] +
-           sentences_end_positions[i - 1][sentences_end_positions[i - 1].size() - 1])
-          )
-         );
+        (int)local_encoding_lib::CountUtf8Glyphs(text.substr(str_crop_begin, str_crop_len));
 
       glyphaware_sentence_start_positions.push_back(glyphaware_sentence_curr_pos);
 
       int glyphaware_word_curr_pos = 0;
       for (int j = 0; j < sentence_words.size(); ++j) {
         const std::string & word = sentence_words[j];
-        std::string original_word =
-          sentences[i].substr(sentences_start_positions[i][j],
-                              sentences_end_positions[i][j] - sentences_start_positions[i][j]);
-        original_sentence_words.push_back(original_word);
+        //compute white space size before word
+        str_crop_begin = (j == 0) ? 0 : sentences_end_positions[i][j - 1];
+        str_crop_end = sentences_start_positions[i][j];
+        str_crop_len = str_crop_end - str_crop_begin;
 
         glyphaware_word_curr_pos +=
-          (j == 0 ? 0 : (sentences_start_positions[i][j] -
-                         sentences_end_positions[i][j - 1]));
+          (int)local_encoding_lib::CountUtf8Glyphs(sentence.substr(str_crop_begin, str_crop_len));
 
-        int glyph_len = (int)CountUtf8Glyphs(original_word);
+        //compute word size
+        str_crop_begin = sentences_start_positions[i][j];
+        str_crop_end = sentences_end_positions[i][j];
+        str_crop_len = str_crop_end - str_crop_begin;
+        std::string original_word =
+          sentence.substr(str_crop_begin, str_crop_len);
+        original_sentence_words.push_back(original_word);
+        int glyph_len = (int)local_encoding_lib::CountUtf8Glyphs(original_word);
 
         glyphaware_sentences_start_positions[i].push_back(glyphaware_word_curr_pos);
         glyphaware_sentences_end_positions[i].push_back(glyphaware_word_curr_pos + glyph_len);
@@ -225,8 +219,6 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
                    pbssink,
                    options);
   }
-
-
 }
 
 int CTurboTextAnalysis::Analyse(const std::string &language,
@@ -334,7 +326,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<std::string>
   > sentences_entity_tags(sentences_words.size());;
   std::vector<
-    std::vector<EntitySpan*>
+    std::vector<std::unique_ptr<EntitySpan>>
   > sentences_entity_spans(sentences_words.size());;
 
   std::vector<
@@ -413,7 +405,7 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       entity_recognizer->TagSentence(&entity_tagged_sentence);
       entity_tags = entity_tagged_sentence.tags();
 
-      std::vector<EntitySpan*> & entity_spans = sentences_entity_spans[j];
+      std::vector<std::unique_ptr<EntitySpan>> & entity_spans = sentences_entity_spans[j];
       entity_tagged_sentence.CreateSpansFromTags(entity_tags,
                                                  &entity_spans);
     }
@@ -570,6 +562,8 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
     std::vector<CoreferenceSentence> coref_sentences(sentences_words.size());
     for (int j = 0; j < sentences_words.size(); ++j) {
       const std::vector<std::string> & words = sentences_words[j];
+      const std::vector<std::string> & original_words = original_sentences_words[j];
+
       const std::vector<std::string> & lemmas = sentences_lemmas[j];
       const std::vector<std::string> & tagger_tags = sentences_tagger_tags[j];
       const std::vector<std::string> & deprels = sentences_deprels[j];
@@ -677,6 +671,103 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
   // 10. argument_lists
   // 11. coref_info
 
+  bool use_entities = entity_recognizer != nullptr &&
+    ((options == nullptr && default_use_entity_recognizer) ||
+    (options != nullptr && options->use_entity_recognizer));
+
+  bool emit_entity_strings =
+    ((options == nullptr && default_emit_entity_strings) ||
+    (options != nullptr && options->emit_entity_strings));
+
+  std::vector<std::vector<std::string>> entity_types, entity_strings;
+  //std::vector<std::vector<std::string>> entity_orig_strings;
+  std::vector<std::vector<size_t>> entity_offsets, entity_lens;
+  std::vector<std::vector<bool>> entity_is_multi;
+  if (use_entities && emit_entity_strings) {
+    std::vector<std::string> split_out;
+    for (int j = 0; j < sentences_words.size(); ++j) {
+      const std::vector<std::string> & words = sentences_words[j];
+      const std::vector<std::string> & original_words = original_sentences_words[j];
+
+      int  sentence_start_position = sentence_start_positions[j];
+      const std::vector<int>  & sentence_tokens_start_positions = sentences_start_positions[j];
+      const std::vector<int>  & sentence_tokens_end_positions = sentences_end_positions[j];
+
+
+      const std::vector<std::string> & entity_tags = sentences_entity_tags[j];
+      entity_types.push_back({});
+      entity_strings.push_back({});
+      //entity_orig_strings.push_back({});
+      entity_offsets.push_back({});
+      entity_lens.push_back({});
+      entity_is_multi.push_back({});
+
+      struct EntityMarker {
+        std::string buffer;
+        std::string type;
+        std::string original_tokens;
+        size_t offset;
+        size_t len;
+        int begin_i{ -1 };
+        bool multi{ false };
+      };
+      EntityMarker working_entity;
+      std::vector<EntityMarker> entities;
+
+      for (int i = 0; i < words.size(); i++) {
+        entity_types.back().push_back({});
+        entity_strings.back().push_back({});
+        //entity_orig_strings.back().push_back({});
+        entity_offsets.back().push_back({});
+        entity_lens.back().push_back({});
+        entity_is_multi.back().push_back({});
+        if (!entity_tags[i].empty() && entity_tags[i][0] == 'B') {
+          if (working_entity.begin_i >= 0) {
+            entities.push_back(working_entity);
+            working_entity.begin_i = -1;
+          }
+
+          split_out.clear();
+          SplitString(entity_tags[i], '-', &split_out);
+          std::string type{ "unknown" };
+          if (split_out.size() >= 2) {
+            type = split_out[1];
+          }
+          working_entity.multi = false;
+          working_entity.buffer = words[i];
+          working_entity.original_tokens = original_words[i];
+          working_entity.offset = sentence_start_position + sentence_tokens_start_positions[i];
+          working_entity.len = sentence_tokens_end_positions[i] - sentence_tokens_start_positions[i];
+          working_entity.type = type;
+          working_entity.begin_i = i;
+        } else if (!entity_tags[i].empty() && entity_tags[i][0] == 'I' &&
+                   working_entity.begin_i >= 0) {
+          working_entity.buffer +=
+            working_entity.buffer.empty() ? words[i] : " " + words[i];
+          working_entity.original_tokens +=
+            working_entity.original_tokens.empty() ? original_words[i] : " " + original_words[i];
+          working_entity.len = sentence_tokens_end_positions[i] - sentence_tokens_start_positions[working_entity.begin_i];
+          working_entity.multi = true;
+        }
+        if (i == words.size() - 1) {
+          if (working_entity.begin_i >= 0) {
+            entities.push_back(working_entity);
+            working_entity.begin_i = -1;
+          }
+        }
+      }
+
+      for (auto& entity : entities) {
+        entity_strings.back()[entity.begin_i] = entity.buffer;
+        //entity_orig_strings.back()[entity.begin_i] = entity.original_tokens;
+        entity_types.back()[entity.begin_i] = entity.type;
+        entity_offsets.back()[entity.begin_i] = entity.offset;
+        entity_lens.back()[entity.begin_i] = entity.len;
+        entity_is_multi.back()[entity.begin_i] = entity.multi;
+      }
+    }
+  }
+
   for (int j = 0; j < sentences_words.size(); ++j) {
     const std::vector<std::string> & words = sentences_words[j];
     const std::vector<int> & start_positions = sentences_start_positions[j];
@@ -743,7 +834,17 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
       if (entity_recognizer != nullptr &&
         ((options == nullptr && default_use_entity_recognizer) ||
           (options != nullptr && options->use_entity_recognizer))) {
-        pbssink->PutFeature("entity_tag", (entity_tags[i]).c_str());
+        if (emit_entity_strings &&
+            !entity_types.empty() && !entity_strings.empty()) {
+          if (!entity_types[j][i].empty() && entity_is_multi[j][i] == false) {
+            std::string feature_name = "entity_" + entity_types[j][i];
+            pbssink->PutFeature(feature_name.c_str(),
+                                entity_strings[j][i].c_str());
+          }
+          pbssink->PutFeature("entity_tag", (entity_tags[i]).c_str());
+        } else {
+          pbssink->PutFeature("entity_tag", (entity_tags[i]).c_str());
+        }
       }
       if (semantic_parser != nullptr &&
         ((options == nullptr && default_use_semantic_parser) ||
@@ -764,6 +865,29 @@ int CTurboTextAnalysis::Analyse(const std::string &language,
           (options != nullptr && options->use_coreference_resolver))) {
         pbssink->PutFeature("coref_info", (coref_info[i]).c_str());
       }
+
+      //Send new Token whenever entity is a multi token
+      if (entity_recognizer != nullptr &&
+        ((options == nullptr && default_use_entity_recognizer) ||
+          (options != nullptr && options->use_entity_recognizer))) {
+        if (emit_entity_strings &&
+            !entity_types.empty() && !entity_strings.empty()) {
+          if (!entity_types[j][i].empty() && entity_is_multi[j][i]) {
+            pbssink->PutToken(entity_strings[j][i].c_str(),
+                              entity_lens[j][i],
+                              entity_offsets[j][i],
+                              TokenKind::multi);
+            //Not really an original string, as the sub tokens are concatenated 
+            //with single white spaces (and it may not be the case)
+            //if (entity_orig_strings.size() > j && entity_orig_strings[j].size() > i)
+            //    pbssink->PutFeature("original_token", (entity_orig_strings[j][i]).c_str());
+            std::string feature_name = "entity_" + entity_types[j][i];
+            pbssink->PutFeature(feature_name.c_str(),
+                                entity_strings[j][i].c_str());
+          }
+        }
+      }
+
     }
     pbssink->EndSentence();
   }
@@ -776,8 +900,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
   // using a local lock_guard to lock m_lock guarantees unlocking on destruction / exception:
   std::lock_guard<std::mutex> lock(_worker_map.m_lock);
 
-  CTurboWorkers*turbo_workers = nullptr;
-  if (_worker_map.FindLanguageWorkers(lang, turbo_workers))
+  if (_worker_map.FindLanguageWorkers(lang))
     return 0;
 
   LoadOptions local_options;
@@ -808,19 +931,19 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
     config.readFile(filepath_config.c_str());
 
     if (_interface == nullptr) {
-      {
-        // Configure logging
-        //
-        if (!config.exists("logging")) {
-          LOG(ERROR) << "Missing 'logging' config section in file: "
-            << filepath_config;
-          return -1;
-        }
-        libconfig::Setting &logging = config.lookup("logging");
-        if (!GLogConfig::SetupGLog(logging)) {
-          return -1;
-        }
-      }
+      //{
+      //  // Configure logging
+      //  //
+      //  if (!config.exists("logging")) {
+      //    LOG(ERROR) << "Missing 'logging' config section in file: "
+      //      << filepath_config;
+      //    return -1;
+      //  }
+      //  libconfig::Setting &logging = config.lookup("logging");
+      //  if (!GLogConfig::SetupGLog(logging)) {
+      //    return -1;
+      //  }
+      //}
       _interface = new TurboParserInterface::TurboParserInterface();
     }
 
@@ -1018,6 +1141,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
         bool read_default_use_entity_recognizer = true;
         bool read_default_use_semantic_parser = true;
         bool read_default_use_coreference_resolver = true;
+        bool read_default_emit_entity_strings = true;
 
         read_ok &= ReadSettingSafe(setting, "default_use_tagger",
                                    read_default_use_tagger);
@@ -1031,6 +1155,13 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
                                    read_default_use_semantic_parser);
         read_ok &= ReadSettingSafe(setting, "default_use_coreference_resolver",
                                    read_default_use_coreference_resolver);
+
+        read_ok &=
+          ReadorDefaultLibConfigSetting(setting,
+                                        "default_emit_entity_strings",
+                                        false,
+                                        read_default_emit_entity_strings);
+
         if (!read_ok) {
           std::cerr << "Missing configuration properties" << std::endl;
           return -1;
@@ -1042,6 +1173,7 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
         default_use_entity_recognizer = read_default_use_entity_recognizer;
         default_use_semantic_parser = read_default_use_semantic_parser;
         default_use_coreference_resolver = read_default_use_coreference_resolver;
+        default_emit_entity_strings = read_default_emit_entity_strings;
 
         if (default_use_morphological_tagger && !default_use_tagger) {
           default_use_tagger = true;
@@ -1124,40 +1256,40 @@ int CTurboTextAnalysis::LoadLanguage(const std::string &lang,
     local_options.load_morphological_tagger = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting morphological tagger "
-      << "will not be accepted, as there is now tagger model." << std::endl;
+      << "will not be accepted, as there is no tagger model." << std::endl;
   }
 
   if (local_options.load_entity_recognizer && !local_options.load_tagger) {
     local_options.load_entity_recognizer = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting entity recognizer "
-      << "will not be accepted, as there is now tagger model." << std::endl;
+      << "will not be accepted, as there is no tagger model." << std::endl;
   }
 
   if (local_options.load_semantic_parser && !local_options.load_tagger) {
     local_options.load_semantic_parser = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting semantic parser "
-      << "will not be accepted, as there is now tagger model." << std::endl;
+      << "will not be accepted, as there is no tagger model." << std::endl;
   }
   if (local_options.load_semantic_parser && !local_options.load_parser) {
     local_options.load_semantic_parser = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting semantic parser "
-      << "will not be accepted, as there is now parser model." << std::endl;
+      << "will not be accepted, as there is no parser model." << std::endl;
   }
 
   if (local_options.load_coreference_resolver && !local_options.load_tagger) {
     local_options.load_coreference_resolver = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting coreference resolver "
-      << "will not be accepted, as there is now tagger model." << std::endl;
+      << "will not be accepted, as there is no tagger model." << std::endl;
   }
   if (local_options.load_coreference_resolver && !local_options.load_parser) {
     local_options.load_coreference_resolver = false;
     LOG(WARNING) << "CONFIG FILE OVERRIDE:" << std::endl;
     LOG(WARNING) << "Requesting coreference resolver "
-      << "will not be accepted, as there is now parser model." << std::endl;
+      << "will not be accepted, as there is no parser model." << std::endl;
   }
 
   Tokenizer *tokenizer = nullptr;

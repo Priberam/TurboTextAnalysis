@@ -5,16 +5,16 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "F:\\Projects\\TurboParser_DN"
-    TURBO_TEXT_ANALYSIS_PATH = "F:\\Projects\\TurboTextAnalysis"
-    ICU_INC_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\include"
-    ICU_LIB_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\lib64"
+    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
+    TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
+    ICU_INC_PATH = "C:\\externallibs\\include"
+    ICU_LIB_PATH = "C:\\externallibs\\lib"
     
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
     language="c++",
     extra_compile_args=["/Zi", "/O2",  "/DGOOGLE_GLOG_DLL_DECL=", "/DGFLAGS_DLL_DECL="],
-	#extra_link_args=["/DEBUG"],
+    #extra_link_args=["/DEBUG"],
     include_dirs=
     [".",
     "..",
@@ -55,8 +55,8 @@ if os.name == 'nt':
     "libglog_static_140mdx64.lib",      
     "gtest-md_140mdx64.lib",
     "libconfig++.lib",
-    "icuucd.lib",
-    "icuind.lib"]
+    "icuuc.lib",
+    "icuin.lib"]
     )]        
     #"libconfig++_140mdx64.lib",    
     setup(cmdclass={'build_ext': build_ext},
