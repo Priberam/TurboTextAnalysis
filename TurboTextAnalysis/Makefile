@@ -19,17 +19,16 @@ SEMANTICPARSER = /pba/workspace/TurboParser/src/semantic_parser
 COREFERENCERESOLVER = /pba/workspace/TurboParser/src/coreference_resolver
 MORPHOLOGICALTAGGER = /pba/workspace/TurboParser/src/morphological_tagger
 
-LIBCONFIGINCLUDES = /pba/lib_deps/libconfig/lib
-LIBCONFIG = /pba/lib_deps/libconfig/lib/.libs
-
 AUXLIBS = /pba/workspace/TurboParser/deps/local/lib
 AUXINCLUDES = /pba/workspace/TurboParser/deps/local/include
 LOCALDEPSINCLUDES = /pba/workspace/TurboTextAnalysis/deps
+#LIBCONFIGINCLUDES = /pba/lib_deps/libconfig/lib
+#LIBCONFIG = /pba/lib_deps/libconfig/lib/.libs
 #LIBCONFIGINCLUDES = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib
 #LIBCONFIG = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib/.libs
 
-INCLUDES = -I$(UTIL) -I$(CLASSIFIER) -I$(SEQUENCE) -I$(TAGGER) -I$(ENTITYRECOGNIZER) -I$(LIBCONFIG)  -I$(PARSER) -I$(SEMANTICPARSER) -I$(COREFERENCERESOLVER)  -I$(MORPHOLOGICALTAGGER) -I$(LIBTURBOPARSER) -I$(AUXINCLUDES) -I$(LOCALDEPSINCLUDES) -I$(LOCALINCLUDES) -I$(LIBCONFIGINCLUDES)
-LIBS = -L$(AUXLIBS) -L$(LIBTURBOPARSER) -L$(LIBCONFIG)
+INCLUDES = -I$(UTIL) -I$(CLASSIFIER) -I$(SEQUENCE) -I$(TAGGER) -I$(ENTITYRECOGNIZER) -I$(PARSER) -I$(SEMANTICPARSER) -I$(COREFERENCERESOLVER)  -I$(MORPHOLOGICALTAGGER) -I$(LIBTURBOPARSER) -I$(AUXINCLUDES) -I$(LOCALDEPSINCLUDES) -I$(LOCALINCLUDES)
+LIBS = -L$(AUXLIBS) -L$(LIBTURBOPARSER)
 #LIBS += -L/usr/local/lib/
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(INCLUDES)
 LDFLAGS = -shared
@@ -38,7 +37,8 @@ LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog
-LFLAGS += $(LIBCONFIG)/libconfig++.so
+LFLAGS += -lconfig++
+#LFLAGS += $(LIBCONFIG)/libconfig++.so
 #LFLAGS += $(LIBCONFIG)/libconfig++.so.9.1.3
 
 #For verbosity
@@ -46,8 +46,8 @@ LFLAGS += -v
 CFLAGS += $(DEBUG)
 
 HDRS = $(wildcard *.h)
-HDRS += $(shell find $(HEADERPATH) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(LIBCONFIG)  $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) $(LIBCONFIGINCLUDES) -name '*.h')
-HDRS += $(shell find $(HEADERPATH) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(LIBCONFIG) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) $(LIBCONFIGINCLUDES) -name '*.h++')
+HDRS += $(shell find $(HEADERPATH) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) -name '*.h')
+HDRS += $(shell find $(HEADERPATH) $(UTIL) $(CLASSIFIER) $(SEQUENCE) $(TAGGER) $(ENTITYRECOGNIZER) $(PARSER) $(SEMANTICPARSER) $(COREFERENCERESOLVER)  $(MORPHOLOGICALTAGGER) $(LIBTURBOPARSER) $(AUXINCLUDES) $(LOCALDEPSINCLUDES) $(LOCALINCLUDES) -name '*.h++')
 SRCS  = $(shell find $(SOURCEPATH) -name '*.cpp')
 SRCS += $(shell find $(SOURCEPATH) -name '*.c')
 
