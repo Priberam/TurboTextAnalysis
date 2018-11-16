@@ -1,0 +1,34 @@
+﻿Priberam TurboTextAnalysis OS Software License Rev. 2018.11 
+-----------------------------------------------------------------------------------------------------------------------------------
+Priberam’s TurboTextAnalysis (“PRODUCT”) is a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems. 
+Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. (“PRIBERAM”) (www.priberam.com)
+
+The original certified version of this document can be found at: https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf  
+-----------------------------------------------------------------------------------------------------------------------------------
+The PRODUCT is free software: you can redistribute it and/or modify it under the terms of the "GNU Lesser General Public License" as published by the Free Software Foundation, version 3 of the License.
+
+This PRODUCT is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "GNU Lesser General Public License" for more details.
+
+You should have received a copy of the "GNU Lesser General Public License" along with the PRODUCT. If not, see http://www.gnu.org/licenses/ or https://www.priberam.pt/docs/GNU_LGPL_v3.pdf
+-----------------------------------------------------------------------------------------------------------------------------------
+PRIBERAM designed and implemented the PRODUCT over TurboParser which was written by André Martins. The PRODUCT also uses the following Software whose licenses can be found on folder "LICENSES" and should be read and understood:
+
+  SOFTWARE| FOLDER | OBS.
+- TurboParser | turboparser | Copyright © André Martins - GNU LGPL v3
+- AD3 | libad3 | Copyright © André Martins - GNU LGPL v3
+- eigen | eigen | Copyright © 2009 Gael Guennebaud gael.guennebaud@inria.fr - MPL v2
+- libglog | libglog | Copyright © 2008, Google Inc.and Copyright (c) 2003-2008, Jouni Malinen <j@w1.fi> and contributors. - BSD-3-Clause
+- gflags | gflags | Copyright © 2006, Google Inc. - BSD-3-Clause
+- libgtest | libgtest | Copyright © 2008, Google Inc. - BSD-3-Clause
+- libconfig | libconfig | Copyright © 1991, 1999 Free Software Foundation, Inc. - GNU LGPL v2.1, February 1999.
+- libicu | libicu | Copyright © 1991-2017 Unicode, Inc. - MIT License (extended)
+- Json | json | Copyright (c) 2013-2016 Niels Lohmann <http://nlohmann.me> - MIT License
+
+Please forward any questions about this license or the PRODUCT to:
+
+Priberam Informática, S.A.
+Alameda D. Afonso Henriques, 41 - 2.º
+1000-123 LISBOA
+PORTUGAL
+
+Email: Legal@priberam.com | Phone: +351 21 781 72 60
