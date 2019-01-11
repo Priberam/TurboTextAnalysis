@@ -8,20 +8,22 @@ HEADERPATH = .
 SOURCEPATH = .
 LOCALINCLUDES =  ..
 
-LIBTURBOPARSER = /pba/workspace/TurboParser/libturboparser
-UTIL = /pba/workspace/TurboParser/src/util
-CLASSIFIER = /pba/workspace/TurboParser/src/classifier
-SEQUENCE = /pba/workspace/TurboParser/src/sequence
-TAGGER = /pba/workspace/TurboParser/src/tagger
-ENTITYRECOGNIZER = /pba/workspace/TurboParser/src/entity_recognizer
-PARSER = /pba/workspace/TurboParser/src/parser
-SEMANTICPARSER = /pba/workspace/TurboParser/src/semantic_parser
-COREFERENCERESOLVER = /pba/workspace/TurboParser/src/coreference_resolver
-MORPHOLOGICALTAGGER = /pba/workspace/TurboParser/src/morphological_tagger
+TBPP=/home/zam/code
+LIBTURBOPARSER = $(TBPP)/TurboParser/libturboparser
+UTIL = $(TBPP)/TurboParser/src/util
+CLASSIFIER = $(TBPP)/TurboParser/src/classifier
+SEQUENCE = $(TBPP)/TurboParser/src/sequence
+TAGGER = $(TBPP)/TurboParser/src/tagger
+ENTITYRECOGNIZER = $(TBPP)/TurboParser/src/entity_recognizer
+PARSER = $(TBPP)/TurboParser/src/parser
+SEMANTICPARSER = $(TBPP)/TurboParser/src/semantic_parser
+COREFERENCERESOLVER = $(TBPP)/TurboParser/src/coreference_resolver
+MORPHOLOGICALTAGGER = $(TBPP)/TurboParser/src/morphological_tagger
 
-AUXLIBS = /pba/workspace/TurboParser/deps/local/lib
-AUXINCLUDES = /pba/workspace/TurboParser/deps/local/include
-LOCALDEPSINCLUDES = /pba/workspace/TurboTextAnalysis/deps
+AUXLIBS = $(TBPP)/TurboParser/deps/local/lib
+AUXINCLUDES = $(TBPP)/TurboParser/deps/local/include
+LOCALDEPSINCLUDES = $(TBPP)/TurboTextAnalysis/deps
+
 #LIBCONFIGINCLUDES = /pba/lib_deps/libconfig/lib
 #LIBCONFIG = /pba/lib_deps/libconfig/lib/.libs
 #LIBCONFIGINCLUDES = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib
@@ -33,11 +35,12 @@ LIBS = -L$(AUXLIBS) -L$(LIBTURBOPARSER)
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
-LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.so -Wl,--no-whole-archive
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog
 LFLAGS += -lconfig++
+LFLAGS += -licudata -licui18n -licutu -licuuc -licuio
 #LFLAGS += $(LIBCONFIG)/libconfig++.so
 #LFLAGS += $(LIBCONFIG)/libconfig++.so.9.1.3
 

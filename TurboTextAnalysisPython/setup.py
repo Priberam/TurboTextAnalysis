@@ -9,10 +9,11 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
-    TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
-    ICU_INC_PATH = "C:\\externallibs\\include"
-    ICU_LIB_PATH = "C:\\externallibs\\lib"
+    TBPP='/home/zam/code'
+    TURBO_PARSER_PATH = TBPP+"/TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = TBPP+"/TurboTextAnalysis"
+    ICU_INC_PATH = TURBO_TEXT_ANALYSIS_PATH+"/TurboTextAnalysis"
+    ICU_LIB_PATH = "usr/local/lib"
     
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
@@ -67,8 +68,8 @@ if os.name == 'nt':
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )
 else:
-    TURBO_PARSER_PATH = "/pba/workspace/TurboParser"
-    TURBO_TEXT_ANALYSIS_PATH = "/pba/workspace/TurboTextAnalysis"
+    TURBO_PARSER_PATH = "/home/zam/code/TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = "/home/zam/code/TurboTextAnalysis"
 
     ext_modules=[Extension("turboparser", 
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
@@ -94,7 +95,8 @@ else:
     library_dirs=[os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis/"),
     os.path.join(TURBO_PARSER_PATH, "libturboparser/"), 
     os.path.join(TURBO_PARSER_PATH, "deps", "local", "lib/"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "lib", ".libs/")],
+    #os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "lib", ".libs/")
+    ],
     libraries=["turbotextanalysis",
     "turboparser",
     "gflags", 
