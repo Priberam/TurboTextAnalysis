@@ -12,9 +12,8 @@ if os.name == 'nt':
     TBPP='/home/zam/code'
     TURBO_PARSER_PATH = TBPP+"/TurboParser"
     TURBO_TEXT_ANALYSIS_PATH = TBPP+"/TurboTextAnalysis"
-    ICU_INC_PATH = TURBO_TEXT_ANALYSIS_PATH+"/TurboTextAnalysis"
-    ICU_LIB_PATH = "usr/local/lib"
-    
+    ICU_INC_PATH = "C:\\externallibs\\include"
+    ICU_LIB_PATH = "C:\\externallibs\\lib" 
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
     language="c++",
