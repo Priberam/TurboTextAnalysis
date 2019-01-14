@@ -8,29 +8,32 @@ HEADERPATH = .
 SOURCEPATH = .
 LOCALINCLUDES =  ..
 
-LIBTURBOPARSER = /pba/workspace/TurboParser/libturboparser
-UTIL = /pba/workspace/TurboParser/src/util
-CLASSIFIER = /pba/workspace/TurboParser/src/classifier
-SEQUENCE = /pba/workspace/TurboParser/src/sequence
-TAGGER = /pba/workspace/TurboParser/src/tagger
-ENTITYRECOGNIZER = /pba/workspace/TurboParser/src/entity_recognizer
-PARSER = /pba/workspace/TurboParser/src/parser
-SEMANTICPARSER = /pba/workspace/TurboParser/src/semantic_parser
-COREFERENCERESOLVER = /pba/workspace/TurboParser/src/coreference_resolver
-MORPHOLOGICALTAGGER = /pba/workspace/TurboParser/src/morphological_tagger
+LIBTURBOPARSER = ../../TurboParser/libturboparser
+UTIL = ../../TurboParser/src/util
+CLASSIFIER = ../../TurboParser/src/classifier
+SEQUENCE = ../../TurboParser/src/sequence
+TAGGER = ../../TurboParser/src/tagger
+ENTITYRECOGNIZER = ../../TurboParser/src/entity_recognizer
+PARSER = ../../TurboParser/src/parser
+SEMANTICPARSER = ../../TurboParser/src/semantic_parser
+COREFERENCERESOLVER = ../../TurboParser/src/coreference_resolver
+MORPHOLOGICALTAGGER = ../../TurboParser/src/morphological_tagger
 
-AUXLIBS = /pba/workspace/TurboParser/deps/local/lib
-AUXINCLUDES = /pba/workspace/TurboParser/deps/local/include
-LOCALDEPSINCLUDES = /pba/workspace/TurboTextAnalysis/deps
+AUXLIBS = ../../TurboParser/deps/local/lib
+AUXINCLUDES = ../../TurboParser/deps/local/include
+LOCALDEPSINCLUDES = ../../TurboTextAnalysis/deps
 #LIBCONFIGINCLUDES = /pba/lib_deps/libconfig/lib
 #LIBCONFIG = /pba/lib_deps/libconfig/lib/.libs
-#LIBCONFIGINCLUDES = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib
-#LIBCONFIG = /pba/workspace/TurboTextAnalysis/deps/libconfig-1.4.9/lib/.libs
+#LIBCONFIGINCLUDES = ../../TurboTextAnalysis/deps/libconfig-1.4.9/lib
+#LIBCONFIG = ../../TurboTextAnalysis/deps/libconfig-1.4.9/lib/.libs
 
 INCLUDES = -I$(UTIL) -I$(CLASSIFIER) -I$(SEQUENCE) -I$(TAGGER) -I$(ENTITYRECOGNIZER) -I$(PARSER) -I$(SEMANTICPARSER) -I$(COREFERENCERESOLVER)  -I$(MORPHOLOGICALTAGGER) -I$(LIBTURBOPARSER) -I$(AUXINCLUDES) -I$(LOCALDEPSINCLUDES) -I$(LOCALINCLUDES)
 LIBS = -L$(AUXLIBS) -L$(LIBTURBOPARSER)
 #LIBS += -L/usr/local/lib/
-CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(INCLUDES)
+
+BYPASSINIT_GLOG_D =
+
+CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(BYPASSINIT_GLOG_D)   $(CMACROS) $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
 LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive

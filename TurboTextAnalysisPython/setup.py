@@ -63,8 +63,8 @@ if os.name == 'nt':
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )
 else:
-    TURBO_PARSER_PATH = "/pba/workspace/TurboParser"
-    TURBO_TEXT_ANALYSIS_PATH = "/pba/workspace/TurboTextAnalysis"
+    TURBO_PARSER_PATH = "../../TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = "../../TurboTextAnalysis"
 
     ext_modules=[Extension("turboparser", 
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
