@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 /*
 * ICUTokenizer.cpp
 *
@@ -322,7 +326,7 @@ void ICUTokenizer::TokenizeWords(const std::string &sentence,
        start = end, end = boundary->next()) {
     bool is_ponctuation = false;
     int breakType = boundary->getRuleStatus();
-    if (breakType != UBRK_WORD_NONE) {
+    if (breakType == UBRK_WORD_NONE) {
       is_ponctuation = true;
     }
 

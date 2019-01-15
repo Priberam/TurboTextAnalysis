@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 /*
  * TurboWorkers.h
  *
@@ -117,15 +121,8 @@ public:
                          coreference_resolver)));
   }
 
-  bool FindLanguageWorkers(const std::string &language,
-                           CTurboWorkers* turbo_workers) {
-    auto it = find(language);
-    if (it != end()) {
-      turbo_workers = it->second;
-      return true;
-    } else {
-      return false;
-    }
+  bool FindLanguageWorkers(const std::string &language) {
+    return  find(language) != end();
   }
 public:
   //To lock LoadLanguage access

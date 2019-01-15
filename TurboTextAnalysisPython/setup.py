@@ -1,3 +1,7 @@
+#This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+#Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+#Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 from distutils.core import setup, Extension
 from Cython.Distutils import build_ext
 from Cython.Build import cythonize
@@ -5,16 +9,16 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "F:\\Projects\\TurboParser_DN"
-    TURBO_TEXT_ANALYSIS_PATH = "F:\\Projects\\TurboTextAnalysis"
-    ICU_INC_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\include"
-    ICU_LIB_PATH = "C:\\externallibs\\FullFolders\\icu4c-59_1-src\\icu\\lib64"
+    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
+    TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
+    ICU_INC_PATH = "C:\\externallibs\\include"
+    ICU_LIB_PATH = "C:\\externallibs\\lib"
     
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
     language="c++",
     extra_compile_args=["/Zi", "/O2",  "/DGOOGLE_GLOG_DLL_DECL=", "/DGFLAGS_DLL_DECL="],
-	#extra_link_args=["/DEBUG"],
+    #extra_link_args=["/DEBUG"],
     include_dirs=
     [".",
     "..",
@@ -55,16 +59,16 @@ if os.name == 'nt':
     "libglog_static_140mdx64.lib",      
     "gtest-md_140mdx64.lib",
     "libconfig++.lib",
-    "icuucd.lib",
-    "icuind.lib"]
+    "icuuc.lib",
+    "icuin.lib"]
     )]        
     #"libconfig++_140mdx64.lib",    
     setup(cmdclass={'build_ext': build_ext},
     ext_modules = cythonize(ext_modules, gdb_debug=True)
     )
 else:
-    TURBO_PARSER_PATH = "/pba/workspace/TurboParser"
-    TURBO_TEXT_ANALYSIS_PATH = "/pba/workspace/TurboTextAnalysis"
+    TURBO_PARSER_PATH = "../../TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = "../../TurboTextAnalysis"
 
     ext_modules=[Extension("turboparser", 
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],

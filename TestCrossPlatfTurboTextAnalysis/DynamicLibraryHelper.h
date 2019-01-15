@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 #ifndef DYNAMICLIBRARYHELPER_H
 #define DYNAMICLIBRARYHELPER_H
 
@@ -14,6 +18,7 @@
 #include <iostream>
 #include <string>
 #include "deps/encoding.h"
+using namespace local_encoding_lib;
 
 #ifdef _DYNAMICLIBRARY_LINUX
 #include <dlfcn.h>

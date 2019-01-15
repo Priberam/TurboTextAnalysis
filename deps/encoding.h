@@ -11,6 +11,8 @@
 #include <limits>
 #include <locale>
 
+namespace local_encoding_lib {
+
 #if defined(_MSC_VER)
 using encodinglib_wchar_t = int16_t;
 #else
@@ -166,11 +168,15 @@ inline size_t CountUtf8Glyphs(const std::string &str) {
 */
 
 inline size_t GetNextUft8GlyphOffset(const std::string &str,
-                              size_t current_pos,
-                              int * offset = nullptr) {
+                                     size_t current_pos,
+                                     int * offset = nullptr) {
+
+  if (current_pos > str.size())
+    return std::string::npos;
   int j = 0;
   bool found = false;
-  for (const auto &c : str.substr(current_pos)) {
+  for (int i = current_pos; i < str.size(); ++i) {
+    char c = str[i];
     if ((c & 0xc0) != 0x80) {
       found = true;
       break;
@@ -190,8 +196,8 @@ inline size_t GetNextUft8GlyphOffset(const std::string &str,
 */
 
 inline size_t GetPreviousUft8GlyphOffset(const std::string &str,
-                                  size_t current_pos,
-                                  int * offset = nullptr) {
+                                         size_t current_pos,
+                                         int * offset = nullptr) {
   int j = 0;
   bool found = false;
   for (int i = current_pos; i >= 0; i--) {
@@ -205,4 +211,8 @@ inline size_t GetPreviousUft8GlyphOffset(const std::string &str,
   if (offset)*offset = -j;
   return (found) ? current_pos - j : std::string::npos;
 }
+
+}
+
 #endif
+

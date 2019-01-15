@@ -1,11 +1,12 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 /**
 * @file ps_textanalysistemplate.h
 * @brief Template for the definition of language models for text analysis.
 * @author  dan
 * @date  08/02/2017
-* @copyright Copyright PRIBERAM Informa'tica, SA.
-* @par  Company
-*  Priberam, http://www.priberam.pt/
 */
 
 #ifndef COREINDEXLIB_PS_TEXTANALYSISTEMPLATE_H

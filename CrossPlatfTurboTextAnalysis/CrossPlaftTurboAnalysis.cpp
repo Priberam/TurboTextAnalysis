@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 #include "CrossPlaftTurboAnalysis.h"
 
 int CrossPlatfTurboAnalysis::LoadLanguage(const char * language,
@@ -76,6 +80,11 @@ int CrossPlatfTurboAnalysis::Analyse(const char * language,
     if (use_coreference_resolver != module_properties.end())
       use_options.use_coreference_resolver =
       (use_coreference_resolver->second == "true") ? true : false;
+
+    auto emit_entity_strings = module_properties.find("emit_entity_strings");
+    if (emit_entity_strings != module_properties.end())
+      use_options.emit_entity_strings =
+      (emit_entity_strings->second == "true") ? true : false;
   }
   return cturbotextanalysis.
     Analyse(language,

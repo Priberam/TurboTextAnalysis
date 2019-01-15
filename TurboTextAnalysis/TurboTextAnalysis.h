@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 /*
 * TurboTextAnalysis.h
 *
@@ -15,14 +19,34 @@
 #include <string>
 #include <vector>
 
+
+//Variables to select modes of execution
+static bool default_use_tagger = true;
+static bool default_use_parser = true;
+static bool default_use_morphological_tagger = true;
+static bool default_use_entity_recognizer = true;
+static bool default_use_semantic_parser = true;
+static bool default_use_coreference_resolver = true;
+static bool default_emit_entity_strings = true;
+
 class AnalyseOptions {
 public:
+  AnalyseOptions() {
+    use_tagger = default_use_tagger;
+    use_parser = default_use_parser;
+    use_morphological_tagger = default_use_morphological_tagger;
+    use_entity_recognizer = default_use_entity_recognizer;
+    use_semantic_parser = default_use_semantic_parser;
+    use_coreference_resolver = default_use_coreference_resolver;
+    emit_entity_strings = default_emit_entity_strings;
+  }
   bool use_tagger{ false };
   bool use_parser{ false };
   bool use_morphological_tagger{ false };
   bool use_entity_recognizer{ false };
   bool use_semantic_parser{ false };
   bool use_coreference_resolver{ false };
+  bool emit_entity_strings{ false };
 };
 
 class LoadOptions {

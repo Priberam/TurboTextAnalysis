@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboTextAnalysis", "TurboTextAnalysis\TurboTextAnalysis.vcxproj", "{87662244-CA3F-4275-8C9B-BE501CE557B7}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboTextAnalysisCOM", "TurboTextAnalysisCOM\TurboTextAnalysisCOM.vcxproj", "{5693106C-460D-4AF9-96D4-F469E76C8583}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F0FB6DD6-9F1D-4E8D-9891-F15D948090FF}"
 	ProjectSection(SolutionItems) = preProject
 		Dockerfile = Dockerfile
@@ -26,6 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7F68B0C1-9
 		Data\english_parser.model = Data\english_parser.model
 		Data\english_proj_tagger.model = Data\english_proj_tagger.model
 		Data\english_semantic_parser.model = Data\english_semantic_parser.model
+		Data\german_entity_recognizer.model = Data\german_entity_recognizer.model
+		Data\german_universal_parser_pruned-true_model-standard.model = Data\german_universal_parser_pruned-true_model-standard.model
+		Data\german_universal_tagger.model = Data\german_universal_tagger.model
 		Data\spanish_abbreviations.txt = Data\spanish_abbreviations.txt
 		Data\spanish_contraction_suffixes.txt = Data\spanish_contraction_suffixes.txt
 		Data\spanish_contractions.txt = Data\spanish_contractions.txt
@@ -44,6 +43,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "deps", "deps", "{9395D538-6
 		deps\hashing.h = deps\hashing.h
 		deps\json.h = deps\json.h
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboTextAnalysis", "TurboTextAnalysis\TurboTextAnalysis.vcxproj", "{87662244-CA3F-4275-8C9B-BE501CE557B7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurboTextAnalysisCOM", "TurboTextAnalysisCOM\TurboTextAnalysisCOM.vcxproj", "{5693106C-460D-4AF9-96D4-F469E76C8583}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "TurboTextAnalysisPython", "TurboTextAnalysisPython\TurboTextAnalysisPython.pyproj", "{A7ACADC1-D45C-4A51-BAF4-B26EFC114AAF}"
 EndProject
@@ -75,9 +78,10 @@ Global
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|Win32.Build.0 = Debug|Win32
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|x64.ActiveCfg = Debug|x64
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Debug|x64.Build.0 = Debug|x64
-		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Any CPU.ActiveCfg = Release O0|Win32
-		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.ActiveCfg = Release O0|Win32
-		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.Build.0 = Release O0|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Any CPU.ActiveCfg = Release|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Any CPU.Build.0 = Release|x64
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.ActiveCfg = Release|Win32
+		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|Win32.Build.0 = Release|Win32
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|x64.ActiveCfg = Release O0|x64
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release O0|x64.Build.0 = Release O0|x64
 		{87662244-CA3F-4275-8C9B-BE501CE557B7}.Release|Any CPU.ActiveCfg = Release|Win32
@@ -134,8 +138,8 @@ Global
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Any CPU.Build.0 = Release|x64
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Win32.ActiveCfg = Release|Win32
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|Win32.Build.0 = Release|Win32
-		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.ActiveCfg = Release|x64
-		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.Build.0 = Release|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.ActiveCfg = Release O0|x64
+		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release O0|x64.Build.0 = Release O0|x64
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Any CPU.ActiveCfg = Release|Win32
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Win32.ActiveCfg = Release|Win32
 		{E04D44E0-96F4-4B79-9DBF-53160C67276F}.Release|Win32.Build.0 = Release|Win32
@@ -150,8 +154,8 @@ Global
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Any CPU.Build.0 = Release|x64
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Win32.ActiveCfg = Release|Win32
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|Win32.Build.0 = Release|Win32
-		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.ActiveCfg = Release|x64
-		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.Build.0 = Release|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.ActiveCfg = Release O0|x64
+		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release O0|x64.Build.0 = Release O0|x64
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Any CPU.ActiveCfg = Release|Win32
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Win32.ActiveCfg = Release|Win32
 		{534D2D90-2427-4495-B9AE-D9B30510DC29}.Release|Win32.Build.0 = Release|Win32

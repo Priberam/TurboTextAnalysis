@@ -1,3 +1,7 @@
+//This module is part of “Priberam’s TurboTextAnalysis”, a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+//Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+//Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
+
 #include "TurboTokenizer.h"
 #include "StringUtils.h"
 #include "glog/logging.h"
@@ -7,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <stack> 
+using namespace local_encoding_lib;
 
 //#define ORIGINAL_PENN_TREEBANK_TOKENIZER
 
@@ -602,17 +607,17 @@ void TurboTokenizer::SplitSentences(const std::string &text,
       position = delim_position;
       EatWhitespaces(text, position, &start_position);
       position = start_position;
-    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) &&
+    } else if (
       (IsLeftSingleQuotationMark(text, delim_position, &matched_length) ||
-       IsLeftDoubleQuotationMark(text, delim_position, &matched_length))) {
+       IsLeftDoubleQuotationMark(text, delim_position, &matched_length)) &&
+      ValidateBracketsQuotationsClosureLookAhead(text, delim_position)) {
       brackets_and_quotations.push(
         GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)));
       position = delim_position + matched_length;
-    } else if (
-      (IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
-       IsRightDoubleQuotationMark(text, delim_position, &matched_length))
-      && brackets_and_quotations.top() == text.substr(delim_position, matched_length)) {
-      brackets_and_quotations.pop();
+    } else if (IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
+               IsRightDoubleQuotationMark(text, delim_position, &matched_length)) {
+      if (!brackets_and_quotations.empty() && brackets_and_quotations.top() == text.substr(delim_position, matched_length))
+        brackets_and_quotations.pop();
       position = delim_position + matched_length;
     } else if ((IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
                 IsLRDoubleQuotationMark(text, delim_position, &matched_length))
@@ -620,19 +625,21 @@ void TurboTokenizer::SplitSentences(const std::string &text,
                    brackets_and_quotations.top() == text.substr(delim_position, matched_length))) {
       brackets_and_quotations.pop();
       position = delim_position + matched_length;
-    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) &&
-      (brackets_and_quotations.empty()) &&
+    } else if ( brackets_and_quotations.empty() &&
                (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
-                IsLRDoubleQuotationMark(text, delim_position, &matched_length))) {
+                IsLRDoubleQuotationMark(text, delim_position, &matched_length)) &&
+               ValidateBracketsQuotationsClosureLookAhead(text, delim_position) ) {
       brackets_and_quotations.push(
         GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)));
       position = delim_position + matched_length;
-    } else if (ValidateBracketsQuotationsClosureLookAhead(text, delim_position) && IsLeftBracket(text, delim_position, &matched_length)) {
+    } else if (IsLeftBracket(text, delim_position, &matched_length)
+               && ValidateBracketsQuotationsClosureLookAhead(text, delim_position)) {
       brackets_and_quotations.push(GetBracketsQuotationsClosingSymbol(std::string(1, text[delim_position])));
       position = delim_position + 1;
-    } else if (IsRightBracket(text, delim_position, &matched_length) &&
-               brackets_and_quotations.top() == std::string(1, text[delim_position])) {
-      brackets_and_quotations.pop();
+    } else if (IsRightBracket(text, delim_position, &matched_length)) {
+      if (!brackets_and_quotations.empty() &&
+          brackets_and_quotations.top() == std::string(1, text[delim_position]))
+        brackets_and_quotations.pop();
       position = delim_position + 1;
     } else if (IsSentenceStartSymbol(text, delim_position, &matched_length)) {
       if (brackets_and_quotations.empty() && delim_position - start_position > 0) {
@@ -1383,23 +1390,21 @@ bool TurboTokenizer::ValidateSentenceTerminator(const std::string &text,
     std::string token_word = text.substr(address_start_position,
                                          address_end_position - address_start_position);
     if (IsPotentialEmail(token_word)) {
-      if (*terminator_position < address_end_position - 1) {//email cant end with .
-        if (IsLetter(text[address_end_position - 1])) {
-          *terminator_position = address_end_position;
-          return true;
-        } else {
-          int i = address_end_position - 1;
-          while (i >= 0 && !IsLetter(text[i]))
-            i--;
-          *terminator_position = i;
-          return false;
-        }
+      *terminator_position = address_end_position;
+      if (IsLetter(text[address_end_position - 1])) {
+        return false;
       } else {
-        *terminator_position = *terminator_position + 1;
         return true;
       }
-    } else if (IsPotentialWebSite(token_word))
-      return false;
+    } else if (IsPotentialWebSite(token_word)) {
+      *terminator_position = address_end_position;
+      int matched_length;
+      if (IsSentenceEndSymbol(text, address_end_position - 1, &matched_length)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   if (IsPeriod(text[*terminator_position])) {
@@ -1529,7 +1534,7 @@ void TurboTokenizer::GetWordBoundaries(const std::string &text,
 
   int i = position - 1;
   while (GetPreviousUft8GlyphOffset(text, i, &glyph_rel_offset) != std::string::npos) {
-    i = i - glyph_rel_offset;
+    i = i + glyph_rel_offset;
     int sentenceendsymbolmatchedsize = 0;
     if (!IsAlphanumeric(text[i]) && !IsSentenceEndSymbol(text, i, &sentenceendsymbolmatchedsize))break;
     i--;
@@ -1602,8 +1607,9 @@ ValidateTextBracketsQuotationsCoherence(const std::string & text) {
       );
       position = delim_position + matched_length;
     } else if ((IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
-                IsRightDoubleQuotationMark(text, delim_position, &matched_length))
-               && brackets_and_quotations.top().first == text.substr(delim_position, matched_length)) {
+                IsRightDoubleQuotationMark(text, delim_position, &matched_length)) &&
+               !brackets_and_quotations.empty() &&
+               brackets_and_quotations.top().first == text.substr(delim_position, matched_length)) {
       brackets_and_quotations.pop();
       position = delim_position + matched_length;
     } else if (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
@@ -1621,6 +1627,7 @@ ValidateTextBracketsQuotationsCoherence(const std::string & text) {
       );
       position = delim_position + 1;
     } else if (IsRightBracket(text, delim_position, &matched_length) &&
+               !brackets_and_quotations.empty() &&
                brackets_and_quotations.top().first == std::string(1, text[delim_position])) {
       brackets_and_quotations.pop();
       position = delim_position + 1;
@@ -1681,27 +1688,26 @@ ValidateBracketsQuotationsClosureLookAhead(const std::string & text,
       );
       position = delim_position + matched_length;
     } else if ((IsRightSingleQuotationMark(text, delim_position, &matched_length) ||
-                IsRightDoubleQuotationMark(text, delim_position, &matched_length))
-               && !brackets_and_quotations.empty() && brackets_and_quotations.top().first == text.substr(delim_position, matched_length)) {
-      brackets_and_quotations.pop();
+                IsRightDoubleQuotationMark(text, delim_position, &matched_length))) {
+      if (!brackets_and_quotations.empty() && brackets_and_quotations.top().first == text.substr(delim_position, matched_length))
+        brackets_and_quotations.pop();
       position = delim_position + matched_length;
     } else if (IsLRSingleQuotationMark(text, delim_position, &matched_length) ||
                IsLRDoubleQuotationMark(text, delim_position, &matched_length)) {
-      if (!brackets_and_quotations.empty() &&
-          brackets_and_quotations.top().first == text.substr(delim_position, matched_length))
+      if (!brackets_and_quotations.empty() && brackets_and_quotations.top().first == text.substr(delim_position, matched_length))
         brackets_and_quotations.pop();
       else
-        brackets_and_quotations.push(
-      { GetBracketsQuotationsClosingSymbol(text.substr(delim_position, matched_length)), delim_position });
+        brackets_and_quotations.push({ GetBracketsQuotationsClosingSymbol(
+          text.substr(delim_position, matched_length)), delim_position });
       position = delim_position + matched_length;
     } else if (IsLeftBracket(text, delim_position, &matched_length)) {
       brackets_and_quotations.push(
       { GetBracketsQuotationsClosingSymbol(std::string(1, text[delim_position])), delim_position }
       );
       position = delim_position + 1;
-    } else if (IsRightBracket(text, delim_position, &matched_length) &&
-               !brackets_and_quotations.empty() && brackets_and_quotations.top().first == std::string(1, text[delim_position])) {
-      brackets_and_quotations.pop();
+    } else if (IsRightBracket(text, delim_position, &matched_length)) {
+      if (!brackets_and_quotations.empty() && brackets_and_quotations.top().first == std::string(1, text[delim_position]))
+        brackets_and_quotations.pop();
       position = delim_position + 1;
     } else
       position = delim_position + 1;

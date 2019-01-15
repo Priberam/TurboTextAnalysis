@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{215a4207-8bc6-46c1-8e30-3b74e961a00b}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4fd64a23-f9f5-4e74-bafc-fbc0649733a8}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Data Files">
+      <UniqueIdentifier>{667d2bfa-883e-45f9-950d-21f126eae7f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="tests.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testdata\bad_input_0.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\bad_input_1.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\input_0.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\input_1.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\input_2.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\input_3.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\input_4.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\output_0.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\output_1.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\output_2.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\output_3.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+    <None Include="testdata\output_4.cfg">
+      <Filter>Data Files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="testdata\parse_error_0.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+    <Text Include="testdata\parse_error_1.txt">
+      <Filter>Data Files</Filter>
+    </Text>
+  </ItemGroup>
+</Project>

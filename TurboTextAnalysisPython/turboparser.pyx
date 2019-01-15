@@ -30,6 +30,7 @@ cdef extern from "../TurboTextAnalysis/TurboTextAnalysis.h":
         bool use_entity_recognizer
         bool use_semantic_parser
         bool use_coreference_resolver
+        bool emit_entity_strings
 
     cdef cppclass LoadOptions:
         bool load_tagger
@@ -88,6 +89,7 @@ cdef class PyAnalyseOptions:
     cdef public bool use_entity_recognizer
     cdef public bool use_semantic_parser
     cdef public bool use_coreference_resolver
+    cdef public bool emit_entity_strings
     def __cinit__(self):
         self.use_tagger = False
         self.use_parser = False
@@ -95,6 +97,7 @@ cdef class PyAnalyseOptions:
         self.use_entity_recognizer = False
         self.use_semantic_parser = False
         self.use_coreference_resolver = False
+        self.emit_entity_strings = False
 
     def __dealloc__(self):
         pass
@@ -231,6 +234,7 @@ cdef class PyCTurboTextAnalysis:
             c_options.use_entity_recognizer	= pyanalyseoptions.use_entity_recognizer
             c_options.use_semantic_parser = pyanalyseoptions.use_semantic_parser
             c_options.use_coreference_resolver = pyanalyseoptions.use_coreference_resolver
+            c_options.emit_entity_strings = pyanalyseoptions.emit_entity_strings
             retval = self.c_turbotextanalysis.Analyse(language.encode(encoding='UTF-8'), 
                                                       text.encode(encoding='UTF-8'), 
                                                       pycbssink.c_sink,
@@ -261,6 +265,7 @@ cdef class PyCTurboTextAnalysis:
             c_options.use_entity_recognizer	= pyanalyseoptions.use_entity_recognizer
             c_options.use_semantic_parser = pyanalyseoptions.use_semantic_parser
             c_options.use_coreference_resolver = pyanalyseoptions.use_coreference_resolver
+            c_options.emit_entity_strings = pyanalyseoptions.emit_entity_strings
             retval = self.c_turbotextanalysis.Analyse(language.encode(encoding='UTF-8'),
                                                       [[sentence_word.encode(encoding='UTF-8') for sentence_word in sentence_words] for sentence_words in sentences_words],
                                                       [[original_sentence_word.encode(encoding='UTF-8') for original_sentence_word in original_sentence_words] for original_sentence_words in original_sentences_words],
