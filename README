@@ -65,7 +65,7 @@ Build process
           
   To Build TurboTextAnalysis
     1. Obtain this repository.
-        1.1. In deps/, unzip libconfig-1.4.9 from libconfig-1.4.9.zip and compile it.
+        1.1. In deps/, compile libconfig lib in libconfig-1.4.9/ folder.
     2. If OS is Linux
          2.1. Go to the TurboTextAnalysis folder in the TurboTextAnalysis 
               project folder, where you will find a Makefile.
