@@ -9,11 +9,10 @@ import os
 
 
 if os.name == 'nt':    
-    TURBO_PARSER_PATH = "C:\\Projects\\TurboParser_DN"
-    TURBO_TEXT_ANALYSIS_PATH = "C:\\Projects\\TurboTextAnalysis"
+	TURBO_PARSER_PATH = "..\\..\\TurboParser"
+    TURBO_TEXT_ANALYSIS_PATH = "..\\..\\TurboTextAnalysis"
     ICU_INC_PATH = "C:\\externallibs\\include"
-    ICU_LIB_PATH = "C:\\externallibs\\lib"
-    
+    ICU_LIB_PATH = "C:\\externallibs\\lib" 
     ext_modules=[Extension("turboparser",
     ["turboparser.pyx", "CppToPyTurboSink.cpp"],
     language="c++",
@@ -94,7 +93,8 @@ else:
     library_dirs=[os.path.join(TURBO_TEXT_ANALYSIS_PATH, "TurboTextAnalysis/"),
     os.path.join(TURBO_PARSER_PATH, "libturboparser/"), 
     os.path.join(TURBO_PARSER_PATH, "deps", "local", "lib/"),
-    os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "lib", ".libs/")],
+    #os.path.join(TURBO_TEXT_ANALYSIS_PATH, "deps", "libconfig-1.4.9", "lib", ".libs/")
+    ],
     libraries=["turbotextanalysis",
     "turboparser",
     "gflags", 

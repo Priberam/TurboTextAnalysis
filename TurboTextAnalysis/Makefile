@@ -22,6 +22,7 @@ MORPHOLOGICALTAGGER = ../../TurboParser/src/morphological_tagger
 AUXLIBS = ../../TurboParser/deps/local/lib
 AUXINCLUDES = ../../TurboParser/deps/local/include
 LOCALDEPSINCLUDES = ../../TurboTextAnalysis/deps
+
 #LIBCONFIGINCLUDES = /pba/lib_deps/libconfig/lib
 #LIBCONFIG = /pba/lib_deps/libconfig/lib/.libs
 #LIBCONFIGINCLUDES = ../../TurboTextAnalysis/deps/libconfig-1.4.9/lib
@@ -36,11 +37,12 @@ BYPASSINIT_GLOG_D =
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(BYPASSINIT_GLOG_D)   $(CMACROS) $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
-LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.so -Wl,--no-whole-archive
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog
 LFLAGS += -lconfig++
+LFLAGS += -licudata -licui18n -licutu -licuuc -licuio
 #LFLAGS += $(LIBCONFIG)/libconfig++.so
 #LFLAGS += $(LIBCONFIG)/libconfig++.so.9.1.3
 
