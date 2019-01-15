@@ -64,8 +64,7 @@ Build process
              you can ignore this step).
           
   To Build TurboTextAnalysis
-    1. Clone or download TurboParser from master branch 
-        of https://github.com/Priberam/TurboTextAnalysis
+    1. Obtain this repository.
         1.1. In deps/, unzip libconfig-1.4.9 from libconfig-1.4.9.zip and compile it.
     2. If OS is Linux
          2.1. Go to the TurboTextAnalysis folder in the TurboTextAnalysis 
