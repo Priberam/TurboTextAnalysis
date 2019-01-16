@@ -1,5 +1,5 @@
-#This module is part of "Priberam’s TurboTextAnalysis", a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
-#Copyright 2018 by PRIBERAM INFORMÁTICA, S.A. - www.priberam.com
+#This module is part of "Priberam TurboTextAnalysis", a TurboParser's wrapper for easy text analysis, allowing it to be readily used in production systems.
+#Copyright 2018 by PRIBERAM INFORMATICA, S.A. - www.priberam.com
 #Usage subject to The terms & Conditions of the "Priberam TurboTextAnalysis OS Software License" available at https://www.priberam.pt/docs/Priberam_TurboTextAnalysis_OS_Software_License.pdf
 
 from distutils.core import setup, Extension
@@ -9,7 +9,7 @@ import os
 
 
 if os.name == 'nt':    
-	TURBO_PARSER_PATH = "..\\..\\TurboParser"
+    TURBO_PARSER_PATH = "..\\..\\TurboParser"
     TURBO_TEXT_ANALYSIS_PATH = "..\\..\\TurboTextAnalysis"
     ICU_INC_PATH = "C:\\externallibs\\include"
     ICU_LIB_PATH = "C:\\externallibs\\lib" 
