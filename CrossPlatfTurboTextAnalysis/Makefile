@@ -37,8 +37,8 @@ LIBS = -L$(AUXLIBS) -L$(LIBTURBOTEXTANALYSIS) -L$(LIBTURBOPARSER)
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
-LFLAGS += -Wl,--whole-archive $(LIBTURBOTEXTANALYSIS)/libturbotextanalysis.a -Wl,--no-whole-archive
-LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.a -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive -lturbotextanalysis -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive -lturboparser -Wl,--no-whole-archive
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog

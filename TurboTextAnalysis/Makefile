@@ -37,7 +37,7 @@ BYPASSINIT_GLOG_D =
 CFLAGS = -std=gnu++11 -std=c++11 -O3 -Wall -Wno-sign-compare -fmessage-length=0 -fPIC $(BYPASSINIT_GLOG_D)   $(CMACROS) $(INCLUDES)
 LDFLAGS = -shared
 LFLAGS = $(LIBS)
-LFLAGS += -Wl,--whole-archive $(LIBTURBOPARSER)/libturboparser.so -Wl,--no-whole-archive
+LFLAGS += -Wl,--whole-archive -lturboparser -Wl,--no-whole-archive
 LFLAGS += -Wl,-whole-archive -lad3 -Wl,-no-whole-archive
 LFLAGS += -lgflags
 LFLAGS += -lglog
